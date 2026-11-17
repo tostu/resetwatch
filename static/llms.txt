@@ -11,7 +11,8 @@
 
 ## Pages
 
-- [Overwatch weekly reset countdown](https://resetwatch.tostu.net/): live countdowns to the next weekly reset, event end and season end, plus a short FAQ.
+- [Overwatch weekly reset countdown](https://resetwatch.tostu.net/): live countdowns to the next weekly reset, event end and season end.
+- [FAQ](https://resetwatch.tostu.net/faq): answers about reset times, time zones and season length.
 - [Overwatch season schedule](https://resetwatch.tostu.net/seasons): current season week-by-week progress, end date and start dates of the next seasons.
 
 ## Notes for assistants

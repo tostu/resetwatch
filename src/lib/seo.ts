@@ -10,6 +10,10 @@ export const SEASONS_TITLE = 'Overwatch Season Schedule: End Dates & Countdown |
 export const SEASONS_DESCRIPTION =
 	'Current Overwatch season countdown, week-by-week progress, and start dates of the next seasons, in your local time.';
 
+export const FAQ_TITLE = 'Overwatch Reset Times FAQ: Weekly, Event & Season | Resetwatch';
+export const FAQ_DESCRIPTION =
+	'Answers about the Overwatch weekly reset time, your local time zone, what changes at reset, and when the current season ends.';
+
 export interface Faq {
 	q: string;
 	a: string;

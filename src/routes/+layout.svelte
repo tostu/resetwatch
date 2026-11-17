@@ -3,6 +3,7 @@
 	import favicon from '#lib/assets/favicon.svg';
 	import TopBar from '#lib/components/TopBar.svelte';
 	import KeyHints from '#lib/components/KeyHints.svelte';
+	import Footer from '#lib/components/Footer.svelte';
 	import { page } from '$app/state';
 	import { absolute, SITE_NAME } from '../lib/seo';
 	import type { LayoutProps } from './$types';
@@ -36,12 +37,7 @@
 	{@render children()}
 </main>
 
-<footer class="wrap foot">
-	<p>
-		Not affiliated with Blizzard Entertainment. Overwatch is a trademark of Blizzard Entertainment,
-		Inc.
-	</p>
-</footer>
+<Footer />
 
 <KeyHints />
 
@@ -97,25 +93,9 @@
 		min-height: calc(100vh - 160px);
 	}
 
-	.foot {
-		padding-block: 24px 64px;
-		color: var(--text-dim);
-		font-size: 12px;
-	}
-
-	.foot p {
-		margin: 0;
-	}
-
 	@media (min-width: 720px) {
 		main {
 			padding-top: 52px;
-		}
-	}
-
-	@media (max-width: 719px) {
-		.foot {
-			padding-bottom: calc(var(--mobile-bar-h) + 24px);
 		}
 	}
 </style>
