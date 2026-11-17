@@ -90,7 +90,9 @@
 	main {
 		padding-top: 56px;
 		padding-bottom: 24px;
-		min-height: calc(100vh - 160px);
+		/* Fill the first screen so the footer only shows after scrolling down. */
+		min-height: 100vh;
+		min-height: 100dvh;
 	}
 
 	@media (min-width: 720px) {

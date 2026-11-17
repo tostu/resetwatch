@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { clock } from '../lib/now.svelte';
 	import { allResets, nextReset, seasonAt, formatCountdown } from '../lib/resets';
-	import { resolve } from '$app/paths';
 	import { HOME_TITLE, HOME_DESCRIPTION, jsonLdScript, websiteJsonLd } from '../lib/seo';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import ResetCard from '#lib/components/ResetCard.svelte';
@@ -79,45 +78,9 @@
 			/>
 		{/each}
 	</div>
-
-	<section class="info" aria-labelledby="faq">
-		<h2 id="faq" class="display info-h">OVERWATCH RESET TIMES, EXPLAINED</h2>
-		<p class="lead">
-			The Overwatch weekly reset is every <strong>Tuesday at 2 PM ET / 11 AM PT</strong>. Resetwatch
-			counts down to it live, along with the end of the current event and season, in your local time.
-		</p>
-		<p class="more"><a href={resolve('/faq')}>More answers in the FAQ</a></p>
-	</section>
 </div>
 
 <style>
-	.info {
-		margin-top: 56px;
-		max-width: 760px;
-		color: var(--text-dim);
-		line-height: 1.55;
-	}
-	.info-h {
-		margin: 0 0 12px;
-		font-size: 30px;
-		line-height: 1;
-		color: var(--text);
-	}
-	.lead {
-		margin: 0 0 20px;
-		font-size: 17px;
-	}
-	.lead strong {
-		color: var(--text);
-	}
-	.more {
-		margin: 0;
-	}
-	.more a {
-		color: var(--cyan);
-		text-underline-offset: 3px;
-	}
-
 	.page {
 		padding-block: 24px 48px;
 		padding-inline: 16px;
