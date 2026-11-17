@@ -1,4 +1,8 @@
-/** Reset config + time helpers. Edit CONFIG below to change reset times. */
+/**
+ * Reset config + time helpers. Edit CONFIG below to change reset times.
+ * CONFIG season/event values are fallbacks; D1 data baked into data/events.json is merged over them.
+ */
+import eventsJson from './data/events.json';
 
 export const RESET_TZ = 'America/New_York';
 
@@ -35,6 +39,63 @@ export const CONFIG = {
 
 const DAY = 86_400_000;
 const WEEK = 7 * DAY;
+
+/* ---------- Baked D1 events (src/lib/data/events.json) ---------- */
+
+export interface BakedEvent {
+	kind: 'season_start' | 'season_end' | 'event' | string;
+	name?: string | null;
+	starts_at?: string | null;
+	ends_at?: string | null;
+}
+
+export interface BakedEvents {
+	generatedAt?: string | null;
+	events: BakedEvent[];
+}
+
+const baked = eventsJson as BakedEvents;
+
+/**
+ * Season start instants (ISO UTC): fallback list plus season_start events,
+ * sorted and deduped by instant. Fallback is returned as-is when there are none.
+ */
+export function mergeSeasonStarts(fallback: readonly string[], data: BakedEvents): string[] {
+	const byInstant = new Map<number, string>();
+	for (const s of fallback) byInstant.set(Date.parse(s), s);
+	for (const e of data.events) {
+		if (e.kind !== 'season_start' || !e.starts_at) continue;
+		const t = Date.parse(e.starts_at);
+		if (Number.isNaN(t)) continue;
+		byInstant.set(t, e.starts_at);
+	}
+	return [...byInstant.entries()].sort((a, b) => a[0] - b[0]).map(([, s]) => s);
+}
+
+/**
+ * Latest kind=event with an ends_at still in the future (relative to `now`),
+ * else the fallback.
+ */
+export function pickCurrentEvent(
+	fallback: { label: string; endsAt: string },
+	data: BakedEvents,
+	now: number
+): { label: string; endsAt: string } {
+	let best: { label: string; endsAt: string; t: number } | undefined;
+	for (const e of data.events) {
+		if (e.kind !== 'event' || !e.ends_at) continue;
+		const t = Date.parse(e.ends_at);
+		if (Number.isNaN(t) || t <= now) continue;
+		if (!best || t > best.t) best = { label: e.name || fallback.label, endsAt: e.ends_at, t };
+	}
+	return best ? { label: best.label, endsAt: best.endsAt } : { ...fallback };
+}
+
+const seasonStarts = mergeSeasonStarts(CONFIG.seasons.starts, baked);
+
+export function currentEvent(now: number): { label: string; endsAt: string } {
+	return pickCurrentEvent(CONFIG.event, baked, now);
+}
 
 const dtfCache = new Map<string, Intl.DateTimeFormat>();
 function dtf(tz: string): Intl.DateTimeFormat {
@@ -203,7 +264,7 @@ export interface SeasonInfo {
 
 /** Start/end of season at 0-based idx. Extrapolates past the known list. */
 export function seasonByIndex(idx: number): { number: number; start: number; end: number } {
-	const starts = CONFIG.seasons.starts.map((s) => Date.parse(s));
+	const starts = seasonStarts.map((s) => Date.parse(s));
 	const len = CONFIG.seasons.defaultWeeks * WEEK;
 	const last = starts.length - 1;
 	const startOf = (i: number) => (i <= last ? starts[i] : starts[last] + (i - last) * len);
@@ -242,7 +303,7 @@ export function allResets(now: number): ResetEntry[] {
 	const raw: [ResetId, string, number][] = [
 		['daily', 'DAILY', nextOccurrence(CONFIG.daily, now)],
 		['weekly', 'WEEKLY', nextOccurrence(CONFIG.weekly, now)],
-		['event', 'EVENT', Date.parse(CONFIG.event.endsAt)],
+		['event', 'EVENT', Date.parse(currentEvent(now).endsAt)],
 		['season', 'SEASON', season.end]
 	];
 	return raw.map(([id, label, endsAt]) => ({ id, label, endsAt, remaining: endsAt - now }));

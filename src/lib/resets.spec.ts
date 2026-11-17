@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
 	coarse,
 	formatCountdown,
+	mergeSeasonStarts,
 	nextOccurrence,
+	pickCurrentEvent,
 	seasonAt,
 	splitDuration,
 	urgency,
@@ -61,6 +63,57 @@ describe('formatting', () => {
 		expect(urgency(30 * 60000)).toBe('critical');
 		expect(urgency(5 * 3600000)).toBe('soon');
 		expect(urgency(2 * 86400000)).toBe('normal');
+	});
+});
+
+describe('mergeSeasonStarts', () => {
+	const fallback = ['2026-10-06T19:00:00Z', '2026-12-08T19:00:00Z'];
+	it('keeps fallback when no events', () => {
+		expect(mergeSeasonStarts(fallback, { events: [] })).toEqual(fallback);
+	});
+	it('adds, sorts and dedupes by instant, ignoring other kinds', () => {
+		const out = mergeSeasonStarts(fallback, {
+			events: [
+				{ kind: 'season_start', name: 'S7', starts_at: '2027-02-09T19:00:00Z' },
+				{ kind: 'season_start', name: 'S6', starts_at: '2026-12-08T19:00:00.000Z' },
+				{ kind: 'season_end', starts_at: '2027-01-01T00:00:00Z' },
+				{ kind: 'season_start', starts_at: null },
+				{ kind: 'season_start', starts_at: 'garbage' }
+			]
+		});
+		expect(out).toEqual([
+			'2026-10-06T19:00:00Z',
+			'2026-12-08T19:00:00.000Z',
+			'2027-02-09T19:00:00Z'
+		]);
+	});
+});
+
+describe('pickCurrentEvent', () => {
+	const fb = { label: 'Current event', endsAt: '2026-12-08T18:00:00Z' };
+	const now = Date.parse('2026-11-17T20:00:00Z');
+	it('falls back when no events', () => {
+		expect(pickCurrentEvent(fb, { events: [] }, now)).toEqual(fb);
+	});
+	it('picks latest not-yet-ended event', () => {
+		const out = pickCurrentEvent(
+			fb,
+			{
+				events: [
+					{ kind: 'event', name: 'Old', ends_at: '2026-11-01T00:00:00Z' },
+					{ kind: 'event', name: 'Soon', ends_at: '2026-11-24T00:00:00Z' },
+					{ kind: 'event', name: 'Later', ends_at: '2026-12-01T00:00:00Z' },
+					{ kind: 'event', name: 'No end', ends_at: null },
+					{ kind: 'season_end', name: 'Nope', ends_at: '2027-01-01T00:00:00Z' }
+				]
+			},
+			now
+		);
+		expect(out).toEqual({ label: 'Later', endsAt: '2026-12-01T00:00:00Z' });
+	});
+	it('falls back when all events ended', () => {
+		const events = [{ kind: 'event', name: 'Old', ends_at: '2026-11-01T00:00:00Z' }];
+		expect(pickCurrentEvent(fb, { events }, now)).toEqual(fb);
 	});
 });
 
