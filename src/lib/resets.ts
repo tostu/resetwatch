@@ -8,7 +8,7 @@ export const CONFIG = {
 	/** Daily challenge reset, wall clock in RESET_TZ. */
 	daily: { hour: 14, minute: 0 },
 	/** Weekly reset. weekday: 0 = Sun … 2 = Tue. */
-	weekly: { weekday: 2, hour: 14, minute: 0 },
+	weekly: { weekday: 2, hour: 13, minute: 0 },
 	/** Current event end (ISO, UTC). */
 	event: { label: 'Current event', endsAt: '2026-12-08T18:00:00Z' },
 	/**
