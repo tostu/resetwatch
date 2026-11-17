@@ -33,7 +33,7 @@ Steam news feed ──> resetwatch-ingest (Worker, cron */5) ──> D1 ──�
 ```
 
 - **`resetwatch/`** (this folder): SvelteKit 5 + Tailwind 4, built with `adapter-static` and served as Workers static assets. No Worker runs per request.
-- **`../resetwatch-ingest/`**: a cron Worker. Polls the Overwatch Steam news feed with ETag, extracts season and event dates with Workers AI, stores them in D1, then triggers a rebuild of the site when something changed.
+- **[resetwatch-ingest](https://github.com/tostu/resetwatch-ingest)** (separate repo): a cron Worker. Polls the Overwatch Steam news feed with ETag, extracts season and event dates with Workers AI, stores them in D1, then triggers a rebuild of the site when something changed.
 - **`scripts/fetch-events.ts`** runs before `vite build`, queries D1 and writes `src/lib/data/events.json`. It never fails the build: without credentials or on error it keeps the existing file.
 - **`src/lib/resets.ts`** holds the config and all time math. Seasons, events and patches all go live at the weekly reset, so every date from D1 is snapped to the nearest reset. Hardcoded values in `CONFIG` are fallbacks only.
 
@@ -98,7 +98,7 @@ bun run build
 bunx wrangler deploy
 ```
 
-The ingest Worker is deployed separately from `../resetwatch-ingest` with `wrangler deploy`.
+The ingest Worker is deployed separately from [resetwatch-ingest](https://github.com/tostu/resetwatch-ingest) with `wrangler deploy`.
 
 ## Disclaimer
 
