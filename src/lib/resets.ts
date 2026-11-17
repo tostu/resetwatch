@@ -277,7 +277,9 @@ export function formatLocal(ts: number, locale?: string): string {
 		month: 'short',
 		day: 'numeric',
 		hour: '2-digit',
-		minute: '2-digit'
+		minute: '2-digit',
+		// Server render is UTC; the label keeps that explicit until the client swaps in local time.
+		timeZoneName: 'short'
 	}).format(new Date(ts));
 }
 

@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { clock } from '../lib/now.svelte';
 	import { allResets, nextReset, seasonAt, formatCountdown } from '../lib/resets';
-	import { HOME_TITLE, HOME_DESCRIPTION, jsonLdScript, websiteJsonLd } from '../lib/seo';
+	import { resolve } from '$app/paths';
+	import {
+		FAQS,
+		HOME_TITLE,
+		HOME_DESCRIPTION,
+		jsonLdScript,
+		websiteJsonLd,
+		faqJsonLd
+	} from '../lib/seo';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import ResetCard from '#lib/components/ResetCard.svelte';
 
@@ -57,11 +65,16 @@
 	<meta name="twitter:title" content={HOME_TITLE} />
 	<meta name="twitter:description" content={HOME_DESCRIPTION} />
 	{@html jsonLdScript(websiteJsonLd())}
+	{@html jsonLdScript(faqJsonLd(4))}
 </svelte:head>
 
 <div class="wrap page">
 	<div class="top">
-		<PageTitle title="RESETS" subtitle={season.label} srSuffix="Overwatch weekly reset countdown" />
+		<PageTitle
+			title="RESETS"
+			subtitle={season.label}
+			srPrefix="Overwatch Weekly Reset Countdown &amp; Schedule:"
+		/>
 	</div>
 
 	<div class="grid">
@@ -78,6 +91,26 @@
 			/>
 		{/each}
 	</div>
+
+	<!-- Collapsed by default; content stays in the DOM for crawlers. -->
+	<details class="info">
+		<summary aria-label="About the Overwatch reset times"><span aria-hidden="true">?</span></summary>
+		<p>
+			The Overwatch weekly reset happens every Tuesday at 2 PM ET / 11 AM PT. Weekly challenges,
+			the item shop and Mythic Shop rotation, arcade modes and limited-time events all follow that
+			schedule, and each season ends at a Tuesday reset. All times above are shown in your local
+			time zone.
+		</p>
+		<div class="faq">
+			{#each FAQS.slice(0, 4) as f (f.q)}
+				<details>
+					<summary>{f.q}</summary>
+					<p>{f.a}</p>
+				</details>
+			{/each}
+		</div>
+		<p class="more"><a href={resolve('/faq')}>More reset time answers</a></p>
+	</details>
 </div>
 
 <style>
@@ -98,6 +131,56 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 16px;
+	}
+	/* Deliberately quiet: small, dim, below the fold of the cards. */
+	.info {
+		max-width: 720px;
+		margin-top: 40px;
+		font-size: 14px;
+		line-height: 1.55;
+		color: var(--text-faint);
+	}
+	.info > summary {
+		list-style: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: 1px solid rgb(255 255 255 / 0.2);
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--text-faint);
+		opacity: 0.6;
+		cursor: pointer;
+		margin-bottom: 12px;
+	}
+	.info > summary::-webkit-details-marker {
+		display: none;
+	}
+	.info > summary:hover,
+	.info[open] > summary {
+		opacity: 1;
+		color: var(--text-dim);
+	}
+	.info p {
+		margin: 0 0 12px;
+	}
+	.faq details {
+		border-top: 1px solid rgb(255 255 255 / 0.08);
+	}
+	.faq summary {
+		cursor: pointer;
+		padding-block: 10px;
+		color: var(--text-dim);
+	}
+	.faq details p {
+		padding-bottom: 6px;
+	}
+	.more a {
+		color: var(--text-dim);
+		text-underline-offset: 3px;
 	}
 	@media (min-width: 640px) {
 		.grid {

@@ -2,13 +2,18 @@
 	let {
 		title,
 		subtitle,
-		srSuffix
-	}: { title: string; subtitle?: string; srSuffix?: string } = $props();
+		srSuffix,
+		srPrefix
+	}: { title: string; subtitle?: string; srSuffix?: string; srPrefix?: string } = $props();
 </script>
 
 <header class="page-title">
 	<h1 class="display title" data-ghost={title}>
-		{title}{#if srSuffix}<span class="sr-only"> {srSuffix}</span>{/if}
+		{#if srPrefix}<span class="sr-only">{srPrefix} </span>{/if}{title}{#if srSuffix}<span
+				class="sr-only"
+			>
+				{srSuffix}</span
+			>{/if}
 	</h1>
 	{#if subtitle}
 		<p class="display sub">{subtitle}</p>
