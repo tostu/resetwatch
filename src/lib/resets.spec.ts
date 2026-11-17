@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+	activeEvents,
 	coarse,
 	formatCountdown,
 	mergeSeasonStarts,
 	nextOccurrence,
-	pickCurrentEvent,
 	seasonAt,
 	splitDuration,
 	urgency,
@@ -89,31 +89,62 @@ describe('mergeSeasonStarts', () => {
 	});
 });
 
-describe('pickCurrentEvent', () => {
+describe('activeEvents', () => {
 	const fb = { label: 'Current event', endsAt: '2026-12-08T18:00:00Z' };
+	const fbOut = [{ label: 'Current event', endsAt: Date.parse(fb.endsAt), phase: 'live' }];
 	const now = Date.parse('2026-11-17T20:00:00Z');
 	it('falls back when no events', () => {
-		expect(pickCurrentEvent(fb, { events: [] }, now)).toEqual(fb);
+		expect(activeEvents(fb, { events: [] }, now)).toEqual(fbOut);
 	});
-	it('picks latest not-yet-ended event', () => {
-		const out = pickCurrentEvent(
+	it('falls back when all events ended or invalid', () => {
+		const events = [
+			{ kind: 'event', name: 'Old', ends_at: '2026-11-01T00:00:00Z' },
+			{ kind: 'event', name: 'No end', ends_at: null },
+			{ kind: 'season_end', name: 'Nope', ends_at: '2027-01-01T00:00:00Z' }
+		];
+		expect(activeEvents(fb, { events }, now)).toEqual(fbOut);
+	});
+	it('returns all running events sorted by end, dropping ended ones', () => {
+		const out = activeEvents(
 			fb,
 			{
 				events: [
 					{ kind: 'event', name: 'Old', ends_at: '2026-11-01T00:00:00Z' },
-					{ kind: 'event', name: 'Soon', ends_at: '2026-11-24T00:00:00Z' },
-					{ kind: 'event', name: 'Later', ends_at: '2026-12-01T00:00:00Z' },
-					{ kind: 'event', name: 'No end', ends_at: null },
-					{ kind: 'season_end', name: 'Nope', ends_at: '2027-01-01T00:00:00Z' }
+					{ kind: 'event', name: 'Later', starts_at: '2026-11-10T00:00:00Z', ends_at: '2026-12-01T00:00:00Z' },
+					{ kind: 'event', name: 'Soon', ends_at: '2026-11-24T00:00:00Z' }
 				]
 			},
 			now
 		);
-		expect(out).toEqual({ label: 'Later', endsAt: '2026-12-01T00:00:00Z' });
+		expect(out.map((e) => e.label)).toEqual(['Soon', 'Later']);
+		expect(out.every((e) => e.phase === 'live')).toBe(true);
 	});
-	it('falls back when all events ended', () => {
-		const events = [{ kind: 'event', name: 'Old', ends_at: '2026-11-01T00:00:00Z' }];
-		expect(pickCurrentEvent(fb, { events }, now)).toEqual(fb);
+	it('puts upcoming events after live ones, ordered by start', () => {
+		const out = activeEvents(
+			fb,
+			{
+				events: [
+					{ kind: 'event', name: 'Up2', starts_at: '2026-12-01T00:00:00Z', ends_at: '2026-12-10T00:00:00Z' },
+					{ kind: 'event', name: 'Up1', starts_at: '2026-11-20T00:00:00Z', ends_at: '2026-12-20T00:00:00Z' },
+					{ kind: 'event', name: 'Live', starts_at: '2026-11-10T00:00:00Z', ends_at: '2026-12-30T00:00:00Z' }
+				]
+			},
+			now
+		);
+		expect(out.map((e) => [e.label, e.phase])).toEqual([
+			['Live', 'live'],
+			['Up1', 'upcoming'],
+			['Up2', 'upcoming']
+		]);
+	});
+	it('caps the number of events', () => {
+		const events = Array.from({ length: 6 }, (_, i) => ({
+			kind: 'event',
+			name: `E${i}`,
+			ends_at: `2026-12-0${i + 1}T00:00:00Z`
+		}));
+		expect(activeEvents(fb, { events }, now)).toHaveLength(4);
+		expect(activeEvents(fb, { events }, now, 2)).toHaveLength(2);
 	});
 });
 

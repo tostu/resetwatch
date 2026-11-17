@@ -24,6 +24,10 @@
 		event: 'LIMITED TIME',
 		season: 'BATTLE PASS'
 	};
+
+	// Generic "EVENT" label means the hardcoded fallback has no name; use the generic title.
+	const title = (r: (typeof resets)[number]) =>
+		r.kind === 'event' && r.name && r.name.toUpperCase() !== 'CURRENT EVENT' ? r.name : labels[r.kind];
 </script>
 
 <svelte:head>
@@ -37,17 +41,18 @@
 <div class="wrap page">
 	<div class="top">
 		<PageTitle title="RESETS" subtitle={season.label} />
-		<TimeLeft ms={next.remaining} label="NEXT: {labels[next.id]}" />
+		<TimeLeft ms={next.remaining} label="NEXT: {title(next)}" />
 	</div>
 
 	<div class="grid">
 		{#each resets as r, i (r.id)}
 			<ResetCard
-				label={labels[r.id]}
-				kind={r.id}
-				kicker={kickers[r.id]}
+				label={title(r)}
+				kind={r.kind}
+				kicker={r.phase === 'upcoming' ? 'UPCOMING EVENT' : kickers[r.kind]}
 				endsAt={r.endsAt}
 				remaining={r.remaining}
+				phase={r.phase}
 				isNext={r.id === next.id}
 				index={i}
 			/>
@@ -68,6 +73,7 @@
 		gap: 16px 24px;
 		margin-bottom: 36px;
 	}
+	/* Card count varies with the number of events: wrap instead of a fixed column count. */
 	.grid {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -75,12 +81,7 @@
 	}
 	@media (min-width: 640px) {
 		.grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-	@media (min-width: 1024px) {
-		.grid {
-			grid-template-columns: repeat(4, 1fr);
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 		}
 	}
 </style>

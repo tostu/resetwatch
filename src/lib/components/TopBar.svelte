@@ -156,6 +156,10 @@
 	.which {
 		font-size: 20px;
 		font-style: italic;
+		min-width: 0;
+		max-width: 9em;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.time {

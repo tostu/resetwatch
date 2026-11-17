@@ -9,6 +9,7 @@
 		kicker,
 		endsAt,
 		remaining,
+		phase = 'live',
 		isNext = false,
 		index = 0,
 		note
@@ -16,17 +17,26 @@
 		label: string;
 		kind: Kind;
 		kicker: string;
+		/** Countdown target: end time, or start time when phase is `upcoming`. */
 		endsAt: number;
 		remaining: number;
+		phase?: 'live' | 'upcoming';
 		isNext?: boolean;
 		index?: number;
 		note?: string;
 	} = $props();
 
+	const upcoming = $derived(phase === 'upcoming');
+
 	const level = $derived(urgency(remaining));
 </script>
 
-<article class="card {kind}" aria-label={label} style="--i: {index}">
+<article
+	class="card {kind}"
+	class:upcoming-card={upcoming}
+	aria-label={label}
+	style="--i: {index}"
+>
 	<div class="art" aria-hidden="true">
 		{#if kind === 'daily'}
 			<svg viewBox="0 0 120 120" class="glyph">
@@ -67,7 +77,7 @@
 			{#if level === 'critical'}
 				<span class="chip chip-crit">&#9650; UNDER 1 HOUR</span>
 			{:else if level === 'soon'}
-				<span class="chip chip-soon">&#9650; ENDS SOON</span>
+				<span class="chip chip-soon">&#9650; {upcoming ? 'STARTS SOON' : 'ENDS SOON'}</span>
 			{/if}
 		</span>
 		{#if isNext}<span class="tag">NEXT UP</span>{/if}
@@ -78,7 +88,7 @@
 		<h2 class="display name">{label}</h2>
 
 		<div class="num count" role="timer" aria-live="off">{formatCountdown(remaining)}</div>
-		<p class="label coarse">ENDS IN {coarse(remaining)}</p>
+		<p class="label coarse">{upcoming ? 'STARTS' : 'ENDS'} IN {coarse(remaining)}</p>
 
 		<dl class="times">
 			<div>
@@ -227,6 +237,17 @@
 		font-size: clamp(30px, 11cqi, 38px);
 		line-height: 1;
 		color: var(--text);
+		/* Event names vary in length: clamp to two lines. */
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		overflow-wrap: anywhere;
+	}
+
+	.upcoming-card {
+		opacity: 0.92;
 	}
 
 	.count {

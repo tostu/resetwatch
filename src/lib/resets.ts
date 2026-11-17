@@ -12,7 +12,7 @@ export const CONFIG = {
 	/** Daily challenge reset, wall clock in RESET_TZ. */
 	daily: { hour: 14, minute: 0 },
 	/** Weekly reset. weekday: 0 = Sun … 2 = Tue. */
-	weekly: { weekday: 2, hour: 13, minute: 0 },
+	weekly: { weekday: 2, hour: 14, minute: 0 },
 	/** Current event end (ISO, UTC). */
 	event: { label: 'Current event', endsAt: '2026-12-08T18:00:00Z' },
 	/**
@@ -72,29 +72,56 @@ export function mergeSeasonStarts(fallback: readonly string[], data: BakedEvents
 	return [...byInstant.entries()].sort((a, b) => a[0] - b[0]).map(([, s]) => s);
 }
 
+export interface ActiveEvent {
+	label: string;
+	/** ms; undefined when D1 has no start (treated as already live). */
+	startsAt?: number;
+	endsAt: number;
+	phase: 'live' | 'upcoming';
+}
+
+/** Max event cards shown at once. */
+export const MAX_EVENTS = 4;
+
 /**
- * Latest kind=event with an ends_at still in the future (relative to `now`),
- * else the fallback.
+ * All kind=event rows not yet ended (relative to `now`): live ones first by end time,
+ * then upcoming ones by start time. Capped at `max`. Falls back to the single
+ * hardcoded event when none qualify.
  */
-export function pickCurrentEvent(
+export function activeEvents(
 	fallback: { label: string; endsAt: string },
 	data: BakedEvents,
-	now: number
-): { label: string; endsAt: string } {
-	let best: { label: string; endsAt: string; t: number } | undefined;
+	now: number,
+	max = MAX_EVENTS
+): ActiveEvent[] {
+	const out: ActiveEvent[] = [];
 	for (const e of data.events) {
 		if (e.kind !== 'event' || !e.ends_at) continue;
-		const t = Date.parse(e.ends_at);
-		if (Number.isNaN(t) || t <= now) continue;
-		if (!best || t > best.t) best = { label: e.name || fallback.label, endsAt: e.ends_at, t };
+		const endsAt = Date.parse(e.ends_at);
+		if (Number.isNaN(endsAt) || endsAt <= now) continue;
+		const s = e.starts_at ? Date.parse(e.starts_at) : NaN;
+		const startsAt = Number.isNaN(s) ? undefined : s;
+		out.push({
+			label: e.name || fallback.label,
+			startsAt,
+			endsAt,
+			phase: startsAt !== undefined && startsAt > now ? 'upcoming' : 'live'
+		});
 	}
-	return best ? { label: best.label, endsAt: best.endsAt } : { ...fallback };
+	if (out.length === 0) {
+		return [{ label: fallback.label, endsAt: Date.parse(fallback.endsAt), phase: 'live' }];
+	}
+	out.sort((a, b) => {
+		if (a.phase !== b.phase) return a.phase === 'live' ? -1 : 1;
+		return a.phase === 'live' ? a.endsAt - b.endsAt : a.startsAt! - b.startsAt!;
+	});
+	return out.slice(0, max);
 }
 
 const seasonStarts = mergeSeasonStarts(CONFIG.seasons.starts, baked);
 
-export function currentEvent(now: number): { label: string; endsAt: string } {
-	return pickCurrentEvent(CONFIG.event, baked, now);
+export function currentEvents(now: number): ActiveEvent[] {
+	return activeEvents(CONFIG.event, baked, now);
 }
 
 const dtfCache = new Map<string, Intl.DateTimeFormat>();
@@ -292,26 +319,57 @@ export function seasonAt(now: number): SeasonInfo {
 export type ResetId = 'daily' | 'weekly' | 'event' | 'season';
 
 export interface ResetEntry {
-	id: ResetId;
+	/** Unique per card (events get one id each). */
+	id: string;
+	kind: ResetId;
 	label: string;
+	/** Event name when kind is `event`. */
+	name?: string;
+	/** Countdown target: end for live entries, start for upcoming events. */
 	endsAt: number;
 	remaining: number;
+	phase: 'live' | 'upcoming';
 }
 
 export function allResets(now: number): ResetEntry[] {
 	const season = seasonAt(now);
-	const raw: [ResetId, string, number][] = [
-		['daily', 'DAILY', nextOccurrence(CONFIG.daily, now)],
-		['weekly', 'WEEKLY', nextOccurrence(CONFIG.weekly, now)],
-		['event', 'EVENT', Date.parse(currentEvent(now).endsAt)],
-		['season', 'SEASON', season.end]
+	const entry = (
+		kind: ResetId,
+		label: string,
+		endsAt: number,
+		extra: Partial<ResetEntry> = {}
+	): ResetEntry => ({
+		id: kind,
+		kind,
+		label,
+		endsAt,
+		remaining: endsAt - now,
+		phase: 'live',
+		...extra
+	});
+	const events = currentEvents(now).map((e) =>
+		e.phase === 'upcoming'
+			? entry('event', e.label.toUpperCase(), e.startsAt!, {
+					id: `event:${e.startsAt}:${e.endsAt}:${e.label}`,
+					name: e.label,
+					phase: 'upcoming'
+				})
+			: entry('event', e.label.toUpperCase(), e.endsAt, {
+					id: `event:${e.startsAt ?? ''}:${e.endsAt}:${e.label}`,
+					name: e.label
+				})
+	);
+	return [
+		entry('daily', 'DAILY', nextOccurrence(CONFIG.daily, now)),
+		entry('weekly', 'WEEKLY', nextOccurrence(CONFIG.weekly, now)),
+		...events,
+		entry('season', 'SEASON', season.end)
 	];
-	return raw.map(([id, label, endsAt]) => ({ id, label, endsAt, remaining: endsAt - now }));
 }
 
-/** Soonest upcoming reset (ignores ended ones). */
+/** Soonest live reset (ignores ended ones and not-yet-started events). */
 export function nextReset(now: number): ResetEntry {
 	return allResets(now)
-		.filter((r) => r.remaining > 0)
+		.filter((r) => r.remaining > 0 && r.phase === 'live')
 		.sort((a, b) => a.remaining - b.remaining)[0];
 }
