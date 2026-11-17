@@ -256,7 +256,7 @@ Everything here is unverified.
 | Reset  | What we know                                                                                                              | Confidence                                                  |
 | ------ | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | Daily  | Game shows e.g. `19 HOURS TIME LEFT` on the Daily tab. Players say it rolls 20h after your first login/claim **[rep]**    | Medium                                                      |
-| Weekly | Players say Tuesday ~2 PM US Eastern (another source says 1 PM) **[rep]**                                                 | Low. Sources disagree by 1h                                 |
+| Weekly | Tuesday 2:00 PM ET / 11:00 AM PT (Blizzard forums, esports.gg). Used in `CONFIG.weekly` **[rep]**                         | Medium. Verify on a Tuesday                                 |
 | Event  | In-game `EVENT ENDS IN 21 DAYS` on the Events screen                                                                      | High for that screenshot, date unknown                      |
 | Season | Battle Pass title `2026: SEASON 5`, `TIME REMAINING: 21 DAYS` in the screenshot. Season 1 began Tue 10 Feb 2026 **[rep]** | Need the screenshot date to turn "21 days" into an end date |
 
