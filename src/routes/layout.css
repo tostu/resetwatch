@@ -1,0 +1,253 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
+@import '@fontsource/barlow-condensed/600.css';
+@import '@fontsource/barlow-condensed/700.css';
+@import '@fontsource/barlow-condensed/800.css';
+@import '@fontsource/barlow-condensed/600-italic.css';
+@import '@fontsource/barlow-condensed/800-italic.css';
+
+:root {
+	/* Surfaces */
+	--bar: #0d1424;
+	--bg-indigo: #0f1246;
+	--bg-night: #0c1020;
+	--panel: #1d253b;
+	--panel-deep: #111729;
+	--row: #2d374f;
+	--bg-slate: #566481;
+	--bg-slate-hi: #90a5c0;
+
+	/* Interactive */
+	--blue: #0361af;
+	--blue-edge: #3fa9ff;
+	--blue-bar: #0966ef;
+	--orange: #ea5f12;
+	--orange-flare: #ff8a2b;
+	--white-btn: #f5f5f5;
+	--ink: #0d1424;
+
+	/* Status */
+	--ok: #22c439;
+	--ok-fill: #00a700;
+	--gold: #fcc705;
+	--crit: #fa2422;
+	--pink: #df416a;
+	--teal: #026958;
+	--crimson: #8f1636;
+
+	/* Text */
+	--text: #ffffff;
+	--text-dim: #b4bdcf;
+	--text-faint: #7c879d;
+
+	--cyan: #5cc8ff;
+	--cyan-ink: #06223f;
+
+	--ow-logo-orange: #fc9d1f;
+
+	/* Fonts */
+	--font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+	--font-body: 'Barlow', system-ui, sans-serif;
+
+	/* Layout */
+	--bar-h: 56px;
+	--mobile-bar-h: 64px;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	background: var(--bg-night);
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	color: var(--text);
+	font-family: var(--font-body);
+	font-size: 16px;
+	line-height: 1.4;
+	background-color: var(--bg-night);
+	/* Periwinkle haze up top (the game's blurred lobby), falling to deep indigo. */
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' viewBox='0 0 480 480'%3E%3Cg fill='%23fff' fill-opacity='0.07'%3E%3Cpath d='M0 0 L240 0 L120 208 Z'/%3E%3Cpath d='M240 0 L480 0 L360 208 Z'/%3E%3Cpath d='M120 208 L360 208 L240 416 Z'/%3E%3Cpath d='M0 416 L120 208 L240 416 Z' fill-opacity='0.04'/%3E%3C/g%3E%3C/svg%3E"),
+		radial-gradient(120% 70% at 50% -10%, #8b9cc4 0%, rgb(139 156 196 / 0) 70%),
+		linear-gradient(180deg, #4d5b86 0%, #2b3566 38%, #151b45 72%, var(--bg-night) 100%);
+	background-attachment: fixed;
+	background-size:
+		480px 480px,
+		100% 100%,
+		100% 100%;
+}
+
+a {
+	color: inherit;
+}
+
+:focus-visible {
+	outline: 2px solid var(--blue-edge);
+	outline-offset: 2px;
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+	outline-color: var(--blue-edge);
+}
+.btn-secondary:focus-visible {
+	outline-color: var(--orange);
+}
+
+/* ---------- helpers ---------- */
+
+.wrap {
+	width: 100%;
+	max-width: 1200px;
+	margin-inline: auto;
+	padding-inline: 16px;
+}
+
+@media (min-width: 720px) {
+	.wrap {
+		padding-inline: 24px;
+	}
+}
+
+.display {
+	font-family: var(--font-display);
+	font-style: italic;
+	font-weight: 800;
+	text-transform: uppercase;
+	line-height: 0.95;
+	letter-spacing: 0.01em;
+}
+
+.label {
+	font-family: var(--font-display);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.num {
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+/* ---------- buttons ---------- */
+
+.btn-primary,
+.btn-secondary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 0 20px;
+	border: 0;
+	border-radius: 0;
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 18px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	cursor: pointer;
+	position: relative;
+}
+
+.btn-primary {
+	background: var(--orange);
+	color: var(--text);
+	padding-left: 26px;
+}
+
+.btn-primary::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 6px;
+	background: var(--orange-flare);
+}
+
+.btn-primary:hover {
+	background: var(--orange-flare);
+}
+
+/* Slanted tag, like the game's NEW! / NEXT markers. */
+.tag {
+	display: inline-flex;
+	align-items: center;
+	height: 24px;
+	padding: 0 14px 0 12px;
+	background: var(--gold);
+	color: var(--ink);
+	font-family: var(--font-display);
+	font-weight: 800;
+	font-style: italic;
+	font-size: 15px;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+.btn-secondary {
+	background: var(--white-btn);
+	color: var(--ink);
+}
+
+.btn-secondary:hover {
+	background: #fff;
+}
+
+/* ---------- chips ---------- */
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 24px;
+	padding: 0 10px;
+	border-radius: 999px;
+	background: var(--row);
+	color: var(--text-dim);
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+}
+
+.chip-soon {
+	background: var(--gold);
+	color: var(--ink);
+}
+
+.chip-crit {
+	background: var(--crit);
+	color: var(--text);
+}
+
+/* ---------- motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
