@@ -1,9 +1,15 @@
 <script lang="ts">
-	let { title, subtitle }: { title: string; subtitle?: string } = $props();
+	let {
+		title,
+		subtitle,
+		srSuffix
+	}: { title: string; subtitle?: string; srSuffix?: string } = $props();
 </script>
 
 <header class="page-title">
-	<h1 class="display title" data-ghost={title}>{title}</h1>
+	<h1 class="display title" data-ghost={title}>
+		{title}{#if srSuffix}<span class="sr-only"> {srSuffix}</span>{/if}
+	</h1>
 	{#if subtitle}
 		<p class="display sub">{subtitle}</p>
 	{/if}
@@ -43,6 +49,16 @@
 		-webkit-text-fill-color: transparent;
 		z-index: -1;
 		pointer-events: none;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 
 	.sub {

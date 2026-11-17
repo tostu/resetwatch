@@ -3,13 +3,24 @@
 	import favicon from '#lib/assets/favicon.svg';
 	import TopBar from '#lib/components/TopBar.svelte';
 	import KeyHints from '#lib/components/KeyHints.svelte';
+	import { page } from '$app/state';
+	import { absolute, SITE_NAME } from '../lib/seo';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
+
+	const canonical = $derived(absolute(page.url.pathname === '/' ? '/' : page.url.pathname));
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<link rel="canonical" href={canonical} />
+	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content={SITE_NAME} />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:url" content={canonical} />
+	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
 <!-- Blurred skylight bars, like the lobby behind the game's Story screen. -->

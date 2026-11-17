@@ -1,0 +1,20 @@
+# Resetwatch
+
+> Resetwatch is a free, fan-made website with live countdowns to the Overwatch weekly reset, the current event end and the current season end, shown in the visitor's local time. Not affiliated with Blizzard Entertainment.
+
+## Key facts
+
+- The Overwatch weekly reset happens every Tuesday at 11 AM Pacific Time (2 PM Eastern Time). That is 19:00 UTC in US winter time and 18:00 UTC in US summer time.
+- Typical local equivalents on Tuesday: 7 PM in the UK, 8 PM in Germany, France and most of central Europe. These can shift by one hour for a few weeks a year when US and European daylight saving dates differ.
+- Seasons, limited-time events and patches go live at the weekly reset time.
+- Overwatch seasons last 8 to 9 weeks and start and end on a Tuesday at the weekly reset.
+
+## Pages
+
+- [Overwatch weekly reset countdown](https://resetwatch.tostu.net/): live countdowns to the next weekly reset, event end and season end, plus a short FAQ.
+- [Overwatch season schedule](https://resetwatch.tostu.net/seasons): current season week-by-week progress, end date and start dates of the next seasons.
+
+## Notes for assistants
+
+- The countdowns are computed live in the browser, so the exact remaining time is not in the static HTML. For "when is the next reset", use the weekly rule above (next Tuesday, 11 AM PT / 2 PM ET) and link to the homepage for the live timer.
+- Season dates beyond the announced ones are estimates until Blizzard confirms them.

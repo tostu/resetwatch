@@ -1,10 +1,35 @@
 <script lang="ts">
 	import { clock } from '../lib/now.svelte';
 	import { allResets, nextReset, seasonAt, formatCountdown } from '../lib/resets';
+	import {
+		FAQS,
+		HOME_TITLE,
+		HOME_DESCRIPTION,
+		faqJsonLd,
+		jsonLdScript,
+		websiteJsonLd
+	} from '../lib/seo';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import ResetCard from '#lib/components/ResetCard.svelte';
 
 	$effect(() => clock.start());
+
+	// Live countdown in the tab title, readable from a background tab. Foreground and
+	// crawlers keep the static SEO title.
+	$effect(() => {
+		const live = `${formatCountdown(next.remaining)} · ${title(next)} · Resetwatch`;
+		document.title = document.hidden ? live : HOME_TITLE;
+	});
+	$effect(() => {
+		const restore = () => {
+			if (!document.hidden) document.title = HOME_TITLE;
+		};
+		document.addEventListener('visibilitychange', restore);
+		return () => {
+			document.removeEventListener('visibilitychange', restore);
+			document.title = HOME_TITLE;
+		};
+	});
 
 	const season = $derived(seasonAt(clock.now));
 	const next = $derived(nextReset(clock.now));
@@ -30,17 +55,21 @@
 </script>
 
 <svelte:head>
-	<!-- Live countdown in the tab title, readable from a background tab. -->
-	<title>{formatCountdown(next.remaining)} · {title(next)} · Resetwatch</title>
-	<meta
-		name="description"
-		content="Live countdowns to the Overwatch weekly, event and season resets, in your local time."
-	/>
+	<!-- Static, keyword-rich title for crawlers and search snippets. The live countdown title is
+	     applied client-side only while the tab is in the background (see $effect above). -->
+	<title>{HOME_TITLE}</title>
+	<meta name="description" content={HOME_DESCRIPTION} />
+	<meta property="og:title" content={HOME_TITLE} />
+	<meta property="og:description" content={HOME_DESCRIPTION} />
+	<meta name="twitter:title" content={HOME_TITLE} />
+	<meta name="twitter:description" content={HOME_DESCRIPTION} />
+	{@html jsonLdScript(websiteJsonLd())}
+	{@html jsonLdScript(faqJsonLd())}
 </svelte:head>
 
 <div class="wrap page">
 	<div class="top">
-		<PageTitle title="RESETS" subtitle={season.label} />
+		<PageTitle title="RESETS" subtitle={season.label} srSuffix="Overwatch weekly reset countdown" />
 	</div>
 
 	<div class="grid">
@@ -57,9 +86,59 @@
 			/>
 		{/each}
 	</div>
+
+	<section class="info" aria-labelledby="faq">
+		<h2 id="faq" class="display info-h">OVERWATCH RESET TIMES, EXPLAINED</h2>
+		<p class="lead">
+			The Overwatch weekly reset is every <strong>Tuesday at 2 PM ET / 11 AM PT</strong>. Resetwatch
+			counts down to it live, along with the end of the current event and season, in your local time.
+		</p>
+		<dl class="faq">
+			{#each FAQS as f (f.q)}
+				<div>
+					<dt>{f.q}</dt>
+					<dd>{f.a}</dd>
+				</div>
+			{/each}
+		</dl>
+	</section>
 </div>
 
 <style>
+	.info {
+		margin-top: 56px;
+		max-width: 760px;
+		color: var(--text-dim);
+		line-height: 1.55;
+	}
+	.info-h {
+		margin: 0 0 12px;
+		font-size: 30px;
+		line-height: 1;
+		color: var(--text);
+	}
+	.lead {
+		margin: 0 0 20px;
+		font-size: 17px;
+	}
+	.lead strong {
+		color: var(--text);
+	}
+	.faq {
+		margin: 0;
+		display: grid;
+		gap: 16px;
+	}
+	.faq dt {
+		color: var(--text);
+		font-weight: 700;
+		font-size: 16px;
+	}
+	.faq dd {
+		margin: 2px 0 0;
+		font-size: 15px;
+	}
+
 	.page {
 		padding-block: 24px 48px;
 		padding-inline: 16px;

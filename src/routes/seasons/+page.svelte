@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { clock } from '../../lib/now.svelte';
 	import { seasonAt, seasonByIndex, coarse, formatLocal } from '../../lib/resets';
+	import {
+		SEASONS_TITLE,
+		SEASONS_DESCRIPTION,
+		breadcrumbJsonLd,
+		jsonLdScript
+	} from '../../lib/seo';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import TimeLeft from '#lib/components/TimeLeft.svelte';
 
@@ -13,16 +19,27 @@
 </script>
 
 <svelte:head>
-	<title>Seasons — Resetwatch</title>
-	<meta
-		name="description"
-		content="Current Overwatch season progress, weekly reset ticks and upcoming season start dates."
-	/>
+	<title>{SEASONS_TITLE}</title>
+	<meta name="description" content={SEASONS_DESCRIPTION} />
+	<meta property="og:title" content={SEASONS_TITLE} />
+	<meta property="og:description" content={SEASONS_DESCRIPTION} />
+	<meta name="twitter:title" content={SEASONS_TITLE} />
+	<meta name="twitter:description" content={SEASONS_DESCRIPTION} />
+	{@html jsonLdScript(
+		breadcrumbJsonLd([
+			{ name: 'Overwatch Weekly Reset', path: '/' },
+			{ name: 'Overwatch Seasons', path: '/seasons' }
+		])
+	)}
 </svelte:head>
 
 <div class="wrap page">
 	<div class="top">
-		<PageTitle title={season.label} subtitle="TIME REMAINING: {coarse(remaining)}" />
+		<PageTitle
+			title={season.label}
+			subtitle="TIME REMAINING: {coarse(remaining)}"
+			srSuffix="Overwatch season end date and countdown"
+		/>
 		<TimeLeft ms={remaining} label="SEASON ENDS" />
 	</div>
 
