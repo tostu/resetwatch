@@ -5,7 +5,6 @@
 <svelte:head>
 	<title>Privacy Policy | Resetwatch</title>
 	<meta name="description" content="What data Resetwatch collects: none beyond server logs." />
-	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 
 <DocPage title="PRIVACY" subtitle="WHAT WE COLLECT">

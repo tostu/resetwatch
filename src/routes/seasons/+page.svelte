@@ -38,7 +38,8 @@
 		<PageTitle
 			title={season.label}
 			subtitle="TIME REMAINING: {coarse(remaining)}"
-			srSuffix="Overwatch season end date and countdown"
+			srPrefix="Overwatch"
+			srSuffix="End Date &amp; Countdown"
 		/>
 		<TimeLeft ms={remaining} label="SEASON ENDS" />
 	</div>

@@ -2,14 +2,7 @@
 	import { clock } from '../lib/now.svelte';
 	import { allResets, nextReset, seasonAt, formatCountdown } from '../lib/resets';
 	import { resolve } from '$app/paths';
-	import {
-		FAQS,
-		HOME_TITLE,
-		HOME_DESCRIPTION,
-		jsonLdScript,
-		websiteJsonLd,
-		faqJsonLd
-	} from '../lib/seo';
+	import { HOME_TITLE, HOME_DESCRIPTION, jsonLdScript, websiteJsonLd } from '../lib/seo';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import ResetCard from '#lib/components/ResetCard.svelte';
 
@@ -65,7 +58,6 @@
 	<meta name="twitter:title" content={HOME_TITLE} />
 	<meta name="twitter:description" content={HOME_DESCRIPTION} />
 	{@html jsonLdScript(websiteJsonLd())}
-	{@html jsonLdScript(faqJsonLd(4))}
 </svelte:head>
 
 <div class="wrap page">
@@ -73,7 +65,8 @@
 		<PageTitle
 			title="RESETS"
 			subtitle={season.label}
-			srPrefix="Overwatch Weekly Reset Countdown &amp; Schedule:"
+			srPrefix="Overwatch Weekly"
+			srSuffix="Countdown"
 		/>
 	</div>
 
@@ -108,15 +101,7 @@
 			schedule, and each season ends at a Tuesday reset. All times above are shown in your local
 			time zone.
 		</p>
-		<div class="faq">
-			{#each FAQS.slice(0, 4) as f (f.q)}
-				<details>
-					<summary>{f.q}</summary>
-					<p>{f.a}</p>
-				</details>
-			{/each}
-		</div>
-		<p class="more"><a href={resolve('/faq')}>More reset time answers</a></p>
+		<p class="more"><a href={resolve('/faq')}>Reset time FAQ</a></p>
 	</details>
 </div>
 
@@ -183,17 +168,6 @@
 	}
 	.info p {
 		margin: 0 0 12px;
-	}
-	.faq details {
-		border-top: 1px solid rgb(255 255 255 / 0.08);
-	}
-	.faq summary {
-		cursor: pointer;
-		padding-block: 10px;
-		color: var(--text-dim);
-	}
-	.faq details p {
-		padding-bottom: 6px;
 	}
 	.more a {
 		color: var(--text-dim);

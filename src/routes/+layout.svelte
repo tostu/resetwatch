@@ -11,12 +11,20 @@
 	let { children }: LayoutProps = $props();
 
 	const canonical = $derived(absolute(page.url.pathname === '/' ? '/' : page.url.pathname));
+
+	// Pages that should stay out of the index. One robots tag per page, set here only.
+	const NOINDEX_PATHS = ['/privacy'];
+	const robots = $derived(
+		NOINDEX_PATHS.includes(page.url.pathname)
+			? 'noindex, follow'
+			: 'index, follow, max-snippet:-1, max-image-preview:large'
+	);
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<link rel="canonical" href={canonical} />
-	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+	<meta name="robots" content={robots} />
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content={SITE_NAME} />
 	<meta property="og:locale" content="en_US" />
