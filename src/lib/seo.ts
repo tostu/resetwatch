@@ -2,6 +2,9 @@
 export const SITE_URL = 'https://resetwatch.tostu.net';
 export const SITE_NAME = 'Resetwatch';
 
+export const OG_IMAGE = `${SITE_URL}/og.png`;
+export const OG_IMAGE_ALT = 'Resetwatch: Overwatch weekly reset countdown, every Tuesday 2 PM ET / 11 AM PT';
+
 export const HOME_TITLE = 'Overwatch Weekly Reset Countdown: Next Reset Time | Resetwatch';
 export const HOME_DESCRIPTION =
 	'When is the next Overwatch weekly reset? Live countdown to the Tuesday reset (2 PM ET / 11 AM PT), event end and season end, shown in your local time.';

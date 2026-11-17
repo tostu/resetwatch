@@ -5,7 +5,7 @@
 	import KeyHints from '#lib/components/KeyHints.svelte';
 	import Footer from '#lib/components/Footer.svelte';
 	import { page } from '$app/state';
-	import { absolute, SITE_NAME } from '../lib/seo';
+	import { absolute, OG_IMAGE, OG_IMAGE_ALT, SITE_NAME } from '../lib/seo';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
@@ -21,7 +21,13 @@
 	<meta property="og:site_name" content={SITE_NAME} />
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:url" content={canonical} />
-	<meta name="twitter:card" content="summary" />
+	<meta property="og:image" content={OG_IMAGE} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={OG_IMAGE_ALT} />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:image" content={OG_IMAGE} />
+	<meta name="twitter:image:alt" content={OG_IMAGE_ALT} />
 </svelte:head>
 
 <!-- Blurred skylight bars, like the lobby behind the game's Story screen. -->

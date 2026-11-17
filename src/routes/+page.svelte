@@ -77,6 +77,13 @@
 		/>
 	</div>
 
+	<p class="intro">
+		The Overwatch weekly reset is every <strong>Tuesday at 2 PM ET / 11 AM PT</strong>, which is
+		19:00 UTC in winter and 18:00 UTC in summer. Below are live countdowns to the reset, the
+		current event and the season end, in your local time. See the full
+		<a href={resolve('/seasons')}>season schedule</a> for week-by-week progress.
+	</p>
+
 	<div class="grid">
 		{#each resets as r, i (r.id)}
 			<ResetCard
@@ -125,6 +132,16 @@
 		align-items: flex-end;
 		gap: 16px 24px;
 		margin-bottom: 36px;
+	}
+	.intro {
+		margin: -12px 0 28px;
+		font-size: 16px;
+		line-height: 1.55;
+		color: var(--text-dim);
+	}
+	.intro a {
+		color: inherit;
+		text-underline-offset: 3px;
 	}
 	/* Card count varies with the number of events: wrap instead of a fixed column count. */
 	.grid {
