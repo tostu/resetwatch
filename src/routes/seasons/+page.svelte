@@ -33,7 +33,9 @@
 				{@const state = w < season.week ? 'done' : w === season.week ? 'current' : 'upcoming'}
 				<li class="tick {state}" aria-current={state === 'current' ? 'step' : undefined}>
 					<span class="label wk">W{w}</span>
-					<span class="seg" aria-hidden="true"><span class="mark">{state === 'done' ? '✓' : ''}</span></span>
+					<span class="seg" aria-hidden="true"
+						><span class="mark">{state === 'done' ? '✓' : ''}</span></span
+					>
 					<span class="sr-only">
 						Week {w}, {state === 'done'
 							? 'completed'

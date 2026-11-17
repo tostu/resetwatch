@@ -46,7 +46,12 @@
 	.bar {
 		position: absolute;
 		display: block;
-		background: linear-gradient(90deg, rgb(255 255 255 / 0) 0%, rgb(255 255 255 / 0.28) 50%, rgb(255 255 255 / 0) 100%);
+		background: linear-gradient(
+			90deg,
+			rgb(255 255 255 / 0) 0%,
+			rgb(255 255 255 / 0.28) 50%,
+			rgb(255 255 255 / 0) 100%
+		);
 		filter: blur(14px);
 		transform: skewX(-28deg);
 		opacity: 0.55;

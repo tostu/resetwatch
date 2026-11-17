@@ -20,7 +20,12 @@
 		min-width: 0;
 		padding: 12px 36px 14px 28px;
 		text-align: right;
-		background: linear-gradient(90deg, rgb(13 20 36 / 0) 0%, rgb(13 20 36 / 0.82) 28%, rgb(13 20 36 / 0.92) 100%);
+		background: linear-gradient(
+			90deg,
+			rgb(13 20 36 / 0) 0%,
+			rgb(13 20 36 / 0.82) 28%,
+			rgb(13 20 36 / 0.92) 100%
+		);
 		border-right: 4px solid var(--orange);
 		clip-path: polygon(24px 0, 100% 0, 100% 100%, 0 100%);
 	}

@@ -126,7 +126,12 @@
 		bottom: 0;
 		left: -40%;
 		width: 30%;
-		background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.35), rgb(255 255 255 / 0));
+		background: linear-gradient(
+			90deg,
+			rgb(255 255 255 / 0),
+			rgb(255 255 255 / 0.35),
+			rgb(255 255 255 / 0)
+		);
 		transform: skewX(-24deg);
 		animation: sweep 5s ease-in-out infinite;
 		pointer-events: none;

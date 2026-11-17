@@ -32,10 +32,7 @@
 			<svg viewBox="0 0 120 120" class="glyph">
 				<circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="8" />
 				<circle cx="60" cy="60" r="20" fill="currentColor" />
-				<path
-					d="M56 2h8v22h-8zM56 96h8v22h-8zM2 56h22v8H2zM96 56h22v8H96z"
-					fill="currentColor"
-				/>
+				<path d="M56 2h8v22h-8zM56 96h8v22h-8zM2 56h22v8H2zM96 56h22v8H96z" fill="currentColor" />
 			</svg>
 		{:else if kind === 'weekly'}
 			<svg viewBox="0 0 120 120" class="glyph">
@@ -153,7 +150,12 @@
 		position: absolute;
 		inset: 0;
 		z-index: -1;
-		background: linear-gradient(0deg, rgb(5 8 24 / 0.78) 0%, rgb(5 8 24 / 0.5) 38%, rgb(5 8 24 / 0) 62%);
+		background: linear-gradient(
+			0deg,
+			rgb(5 8 24 / 0.78) 0%,
+			rgb(5 8 24 / 0.5) 38%,
+			rgb(5 8 24 / 0) 62%
+		);
 		pointer-events: none;
 	}
 
