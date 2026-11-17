@@ -6,6 +6,7 @@ import {
 	mergeSeasonStarts,
 	nextOccurrence,
 	seasonAt,
+	snapToReset,
 	splitDuration,
 	urgency,
 	zonedToUtc
@@ -34,7 +35,7 @@ describe('nextOccurrence', () => {
 		const before = Date.UTC(2026, 9, 27, 20); // Tue Oct 27 after reset (EDT)
 		expect(nextOccurrence(weekly, before)).toBe(Date.UTC(2026, 10, 3, 19));
 	});
-	it('daily rolls to tomorrow', () => {
+	it('rule without weekday rolls to tomorrow', () => {
 		const now = Date.UTC(2026, 10, 17, 20);
 		expect(nextOccurrence({ hour: 14, minute: 0 }, now)).toBe(Date.UTC(2026, 10, 18, 19));
 	});
@@ -66,35 +67,51 @@ describe('formatting', () => {
 	});
 });
 
+describe('snapToReset', () => {
+	it('date-only lands on that Tuesday reset, DST aware', () => {
+		expect(snapToReset('2026-10-06')).toBe(Date.UTC(2026, 9, 6, 18)); // 11 AM PDT
+		expect(snapToReset('2026-12-08')).toBe(Date.UTC(2026, 11, 8, 19)); // 11 AM PST
+	});
+	it('sloppy instants snap to the nearest reset', () => {
+		expect(snapToReset('2026-12-08T18:00:00Z')).toBe(Date.UTC(2026, 11, 8, 19));
+		expect(snapToReset('2026-12-09T00:00:00Z')).toBe(Date.UTC(2026, 11, 8, 19));
+		expect(snapToReset('2026-12-07T00:00:00Z')).toBe(Date.UTC(2026, 11, 8, 19));
+	});
+	it('NaN for garbage', () => {
+		expect(snapToReset('garbage')).toBeNaN();
+	});
+});
+
 describe('mergeSeasonStarts', () => {
-	const fallback = ['2026-10-06T19:00:00Z', '2026-12-08T19:00:00Z'];
-	it('keeps fallback when no events', () => {
-		expect(mergeSeasonStarts(fallback, { events: [] })).toEqual(fallback);
+	const fallback = ['2026-10-06', '2026-12-08'];
+	const oct6 = Date.UTC(2026, 9, 6, 18);
+	const dec8 = Date.UTC(2026, 11, 8, 19);
+	it('snaps fallback when no events', () => {
+		expect(mergeSeasonStarts(fallback, { events: [] })).toEqual([oct6, dec8]);
 	});
 	it('adds, sorts and dedupes by instant, ignoring other kinds', () => {
 		const out = mergeSeasonStarts(fallback, {
 			events: [
 				{ kind: 'season_start', name: 'S7', starts_at: '2027-02-09T19:00:00Z' },
-				{ kind: 'season_start', name: 'S6', starts_at: '2026-12-08T19:00:00.000Z' },
+				{ kind: 'season_start', name: 'S6', starts_at: '2026-12-08T18:00:00.000Z' },
 				{ kind: 'season_end', starts_at: '2027-01-01T00:00:00Z' },
 				{ kind: 'season_start', starts_at: null },
 				{ kind: 'season_start', starts_at: 'garbage' }
 			]
 		});
-		expect(out).toEqual([
-			'2026-10-06T19:00:00Z',
-			'2026-12-08T19:00:00.000Z',
-			'2027-02-09T19:00:00Z'
-		]);
+		expect(out).toEqual([oct6, dec8, Date.UTC(2027, 1, 9, 19)]);
 	});
 });
 
 describe('activeEvents', () => {
-	const fb = { label: 'Current event', endsAt: '2026-12-08T18:00:00Z' };
-	const fbOut = [{ label: 'Current event', endsAt: Date.parse(fb.endsAt), phase: 'live' }];
+	const fb = { label: 'Current event', endsAt: '2026-12-08' };
+	const fbOut = [{ label: 'Current event', endsAt: Date.UTC(2026, 11, 8, 19), phase: 'live' }];
 	const now = Date.parse('2026-11-17T20:00:00Z');
 	it('falls back when no events', () => {
 		expect(activeEvents(fb, { events: [] }, now)).toEqual(fbOut);
+	});
+	it('drops the fallback once it has ended', () => {
+		expect(activeEvents(fb, { events: [] }, Date.UTC(2026, 11, 8, 19))).toEqual([]);
 	});
 	it('falls back when all events ended or invalid', () => {
 		const events = [
@@ -110,7 +127,12 @@ describe('activeEvents', () => {
 			{
 				events: [
 					{ kind: 'event', name: 'Old', ends_at: '2026-11-01T00:00:00Z' },
-					{ kind: 'event', name: 'Later', starts_at: '2026-11-10T00:00:00Z', ends_at: '2026-12-01T00:00:00Z' },
+					{
+						kind: 'event',
+						name: 'Later',
+						starts_at: '2026-11-10T00:00:00Z',
+						ends_at: '2026-12-01T00:00:00Z'
+					},
 					{ kind: 'event', name: 'Soon', ends_at: '2026-11-24T00:00:00Z' }
 				]
 			},
@@ -124,9 +146,9 @@ describe('activeEvents', () => {
 			fb,
 			{
 				events: [
-					{ kind: 'event', name: 'Up2', starts_at: '2026-12-01T00:00:00Z', ends_at: '2026-12-10T00:00:00Z' },
-					{ kind: 'event', name: 'Up1', starts_at: '2026-11-20T00:00:00Z', ends_at: '2026-12-20T00:00:00Z' },
-					{ kind: 'event', name: 'Live', starts_at: '2026-11-10T00:00:00Z', ends_at: '2026-12-30T00:00:00Z' }
+					{ kind: 'event', name: 'Up2', starts_at: '2026-12-08', ends_at: '2026-12-22' },
+					{ kind: 'event', name: 'Up1', starts_at: '2026-11-24', ends_at: '2026-12-15' },
+					{ kind: 'event', name: 'Live', starts_at: '2026-11-10', ends_at: '2026-12-29' }
 				]
 			},
 			now
@@ -156,6 +178,15 @@ describe('seasonAt', () => {
 		expect(s.weeks).toBe(9);
 		expect(s.end).toBe(Date.UTC(2026, 11, 8, 19));
 		expect(s.label).toBe('2026: SEASON 5');
+	});
+	it('starts at the Tuesday reset, not a fixed UTC hour (S5 = 11 AM PDT)', () => {
+		expect(seasonAt(Date.UTC(2026, 9, 6, 18)).number).toBe(5);
+		expect(seasonAt(Date.UTC(2026, 9, 6, 17, 59)).number).toBe(4);
+	});
+	it('numbering restarts each year', () => {
+		const s = seasonAt(Date.UTC(2027, 2, 1));
+		expect(s.label).toBe('2027: SEASON 1');
+		expect(s.index).toBe(6);
 	});
 	it('Season 4 is 8 weeks', () => {
 		expect(seasonAt(Date.UTC(2026, 8, 1)).weeks).toBe(8);

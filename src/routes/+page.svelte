@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { clock } from '../lib/now.svelte';
-	import { allResets, nextReset, seasonAt } from '../lib/resets';
+	import { allResets, nextReset, seasonAt, formatCountdown } from '../lib/resets';
 	import PageTitle from '#lib/components/PageTitle.svelte';
-	import TimeLeft from '#lib/components/TimeLeft.svelte';
 	import ResetCard from '#lib/components/ResetCard.svelte';
 
 	$effect(() => clock.start());
@@ -12,14 +11,12 @@
 	const resets = $derived(allResets(clock.now));
 
 	const labels: Record<string, string> = {
-		daily: 'DAILY',
 		weekly: 'WEEKLY',
 		event: 'EVENT ENDS',
 		season: 'SEASON ENDS'
 	};
 
 	const kickers: Record<string, string> = {
-		daily: 'CHALLENGES · EVERY DAY',
 		weekly: 'CHALLENGES · EVERY TUESDAY',
 		event: 'LIMITED TIME',
 		season: 'BATTLE PASS'
@@ -27,21 +24,23 @@
 
 	// Generic "EVENT" label means the hardcoded fallback has no name; use the generic title.
 	const title = (r: (typeof resets)[number]) =>
-		r.kind === 'event' && r.name && r.name.toUpperCase() !== 'CURRENT EVENT' ? r.name : labels[r.kind];
+		r.kind === 'event' && r.name && r.name.toUpperCase() !== 'CURRENT EVENT'
+			? r.name
+			: labels[r.kind];
 </script>
 
 <svelte:head>
-	<title>Resetwatch — Overwatch reset times</title>
+	<!-- Live countdown in the tab title, readable from a background tab. -->
+	<title>{formatCountdown(next.remaining)} · {title(next)} · Resetwatch</title>
 	<meta
 		name="description"
-		content="Live countdowns to the Overwatch daily, weekly, event and season resets, in your local time and ET."
+		content="Live countdowns to the Overwatch weekly, event and season resets, in your local time."
 	/>
 </svelte:head>
 
 <div class="wrap page">
 	<div class="top">
 		<PageTitle title="RESETS" subtitle={season.label} />
-		<TimeLeft ms={next.remaining} label="NEXT: {title(next)}" />
 	</div>
 
 	<div class="grid">

@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-test('home shows four reset cards', async ({ page }) => {
+test('home shows weekly, event and season cards', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.getByRole('heading', { level: 1, name: 'RESETS' })).toBeVisible();
-	await expect(page.getByRole('article')).toHaveCount(4);
+	await expect(page.getByRole('article')).toHaveCount(3);
 });
 
 test('seasons shows nine week ticks', async ({ page }) => {

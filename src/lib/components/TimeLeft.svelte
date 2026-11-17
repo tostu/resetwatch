@@ -30,6 +30,19 @@
 		clip-path: polygon(24px 0, 100% 0, 100% 100%, 0 100%);
 	}
 
+	/* Phones: full-width dark slab, edge on the left where the eye starts. */
+	@media (max-width: 719px) {
+		.time-left {
+			width: 100%;
+			padding: 12px 18px 14px;
+			text-align: left;
+			background: rgb(13 20 36 / 0.88);
+			border-right: 0;
+			border-left: 4px solid var(--orange);
+			clip-path: none;
+		}
+	}
+
 	.big {
 		font-size: clamp(36px, 7vw, 56px);
 		font-style: italic;

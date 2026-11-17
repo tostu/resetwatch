@@ -13,8 +13,7 @@
 		if (e.ctrlKey || e.metaKey || e.altKey || typing(e.target)) return;
 		switch (e.key) {
 			case 'Escape':
-				if (showHelp) showHelp = false;
-				else goto(resolve('/'));
+				showHelp = false;
 				break;
 			case '1':
 				goto(resolve('/'));
@@ -33,9 +32,6 @@
 
 <div class="hints" aria-label="Keyboard shortcuts">
 	<div class="group">
-		<span class="hint"><kbd>ESC</kbd> <span class="label">HOME</span></span>
-	</div>
-	<div class="group">
 		<span class="hint"><kbd>1</kbd> <span class="label">RESETS</span></span>
 		<span class="hint"><kbd>2</kbd> <span class="label">SEASONS</span></span>
 		<button type="button" class="hint help" onclick={() => (showHelp = !showHelp)}>
@@ -47,19 +43,27 @@
 {#if showHelp}
 	<div class="help-panel" role="note">
 		<p class="label">SHORTCUTS</p>
-		<p>ESC or 1: Resets. 2: Seasons. ?: toggle this panel.</p>
+		<p>1: Resets. 2: Seasons. ?: toggle this panel.</p>
 	</div>
 {/if}
 
 <style>
 	.hints {
 		position: fixed;
-		left: 16px;
-		right: 16px;
-		bottom: 12px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 24px 16px 12px;
 		z-index: 40;
+		/* Fade strip so scrolled content never sits directly under the hints. */
+		background: linear-gradient(
+			0deg,
+			rgb(8 12 26 / 0.92) 0%,
+			rgb(8 12 26 / 0.6) 55%,
+			rgb(8 12 26 / 0) 100%
+		);
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-end;
 		pointer-events: none;
 		color: var(--text);
 		text-shadow: 0 1px 6px rgb(5 8 24 / 0.6);

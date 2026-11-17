@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { formatCountdown, coarse, urgency, formatLocal, formatET } from '../resets';
+	import { formatCountdown, coarse, urgency, formatLocal } from '../resets';
 
-	type Kind = 'daily' | 'weekly' | 'event' | 'season';
+	type Kind = 'weekly' | 'event' | 'season';
 
 	let {
 		label,
@@ -31,20 +31,10 @@
 	const level = $derived(urgency(remaining));
 </script>
 
-<article
-	class="card {kind}"
-	class:upcoming-card={upcoming}
-	aria-label={label}
-	style="--i: {index}"
->
+<article class="card {kind}" class:upcoming-card={upcoming} aria-label={label} style="--i: {index}">
+	<span class="sheen" aria-hidden="true"></span>
 	<div class="art" aria-hidden="true">
-		{#if kind === 'daily'}
-			<svg viewBox="0 0 120 120" class="glyph">
-				<circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="8" />
-				<circle cx="60" cy="60" r="20" fill="currentColor" />
-				<path d="M56 2h8v22h-8zM56 96h8v22h-8zM2 56h22v8H2zM96 56h22v8H96z" fill="currentColor" />
-			</svg>
-		{:else if kind === 'weekly'}
+		{#if kind === 'weekly'}
 			<svg viewBox="0 0 120 120" class="glyph">
 				<path d="M60 6 114 60 60 114 6 60Z" fill="none" stroke="currentColor" stroke-width="8" />
 				<path d="M60 30 90 60 60 90 30 60Z" fill="currentColor" />
@@ -90,16 +80,10 @@
 		<div class="num count" role="timer" aria-live="off">{formatCountdown(remaining)}</div>
 		<p class="label coarse">{upcoming ? 'STARTS' : 'ENDS'} IN {coarse(remaining)}</p>
 
-		<dl class="times">
-			<div>
-				<dt class="label">YOU</dt>
-				<dd><time datetime={new Date(endsAt).toISOString()}>{formatLocal(endsAt)}</time></dd>
-			</div>
-			<div>
-				<dt class="label">ET</dt>
-				<dd>{formatET(endsAt)}</dd>
-			</div>
-		</dl>
+		<p class="when">
+			<span class="label">{upcoming ? 'STARTS' : 'ENDS'}</span>
+			<time datetime={new Date(endsAt).toISOString()}>{formatLocal(endsAt)}</time>
+		</p>
 
 		{#if note}<p class="note">{note}</p>{/if}
 	</div>
@@ -124,15 +108,84 @@
 		box-shadow:
 			0 1px 0 rgb(255 255 255 / 0.18) inset,
 			0 18px 32px -14px rgb(4 8 30 / 0.7);
-		animation: rise 520ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
-		animation-delay: calc(var(--i) * 70ms);
-		transition: box-shadow 160ms ease;
+		animation: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+		animation-delay: calc(var(--i) * 50ms);
 	}
 
-	.card:hover {
-		box-shadow:
-			0 0 0 2px rgb(255 255 255 / 0.9) inset,
-			0 18px 32px -14px rgb(4 8 30 / 0.7);
+	/*
+	 * Ambient light: a slow diagonal sheen crosses each card on its own offset, so the
+	 * row shimmers without ever reacting to the pointer (cards are not clickable).
+	 */
+	.sheen {
+		position: absolute;
+		inset: -20% auto -20% 0;
+		z-index: 0;
+		width: 45%;
+		background: linear-gradient(
+			90deg,
+			rgb(255 255 255 / 0) 0%,
+			rgb(255 255 255 / 0.13) 50%,
+			rgb(255 255 255 / 0) 100%
+		);
+		transform: translateX(-160%) skewX(-22deg);
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		animation: sheen 9s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+		animation-delay: calc(1.2s + var(--i) * 0.45s);
+	}
+
+	@keyframes sheen {
+		0% {
+			transform: translateX(-160%) skewX(-22deg);
+		}
+		22%,
+		100% {
+			transform: translateX(360%) skewX(-22deg);
+		}
+	}
+
+	/* Rings breathe and the glyph floats, slowly and out of step per card. */
+	@keyframes breathe {
+		0%,
+		100% {
+			opacity: 0.75;
+			transform: translate(-50%, -50%) scale(1);
+		}
+		50% {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1.06);
+		}
+	}
+
+	@keyframes float {
+		0%,
+		100% {
+			translate: 0 0;
+		}
+		50% {
+			translate: 0 -6px;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.card::before {
+			animation: breathe 7s ease-in-out infinite;
+			animation-delay: calc(var(--i) * -1.7s);
+		}
+		.art {
+			animation: float 6s ease-in-out infinite;
+			animation-delay: calc(var(--i) * -1.3s);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.card,
+		.sheen {
+			animation: none;
+		}
+		.sheen {
+			display: none;
+		}
 	}
 
 	/* Concentric target rings behind the glyph, the way the Arcade cards do it. */
@@ -169,11 +222,6 @@
 		pointer-events: none;
 	}
 
-	.daily {
-		--c1: #0fa88a;
-		--c2: #026958;
-		--c3: #014236;
-	}
 	.weekly {
 		--c1: #8a3be0;
 		--c2: #521aa8;
@@ -218,6 +266,12 @@
 	.slot {
 		display: inline-flex;
 		min-height: 24px;
+	}
+
+	.top,
+	.body {
+		position: relative;
+		z-index: 1;
 	}
 
 	.body {
@@ -266,30 +320,20 @@
 		color: var(--cyan);
 	}
 
-	.times {
+	.when {
 		margin: 12px 0 0;
 		padding-top: 10px;
 		border-top: 1px solid rgb(255 255 255 / 0.22);
-		display: grid;
-		gap: 4px;
-		font-size: 14px;
-		color: rgb(255 255 255 / 0.9);
-	}
-
-	.times div {
 		display: flex;
 		gap: 8px;
 		align-items: baseline;
+		font-size: 15px;
+		color: rgb(255 255 255 / 0.92);
 	}
 
-	.times dt {
-		min-width: 28px;
+	.when .label {
 		font-size: 12px;
 		color: rgb(255 255 255 / 0.7);
-	}
-
-	.times dd {
-		margin: 0;
 	}
 
 	.note {
@@ -340,11 +384,9 @@
 			font-size: clamp(34px, 11cqi, 44px);
 		}
 
-		.times {
+		.when {
 			margin-top: 8px;
 			padding-top: 8px;
-			grid-template-columns: 1fr 1fr;
-			gap: 12px;
 		}
 	}
 </style>

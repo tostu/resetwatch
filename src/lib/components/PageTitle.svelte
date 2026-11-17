@@ -34,6 +34,8 @@
 		content: attr(data-ghost);
 		position: absolute;
 		inset: 0;
+		/* Same padding as the title, or the ghost box is wider and wraps differently. */
+		padding-right: inherit;
 		transform: translate(-0.06em, -0.1em);
 		background: linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0));
 		-webkit-background-clip: text;

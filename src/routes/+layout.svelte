@@ -98,7 +98,7 @@
 
 	@media (min-width: 720px) {
 		main {
-			padding-top: 40px;
+			padding-top: 52px;
 		}
 	}
 

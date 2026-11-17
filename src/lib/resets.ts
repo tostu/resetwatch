@@ -9,28 +9,27 @@ export const RESET_TZ = 'America/New_York';
 export type Urgency = 'normal' | 'soon' | 'critical';
 
 export const CONFIG = {
-	/** Daily challenge reset, wall clock in RESET_TZ. */
-	daily: { hour: 14, minute: 0 },
 	/** Weekly reset. weekday: 0 = Sun … 2 = Tue. */
 	weekly: { weekday: 2, hour: 14, minute: 0 },
-	/** Current event end (ISO, UTC). */
-	event: { label: 'Current event', endsAt: '2026-12-08T18:00:00Z' },
+	/** Current event end (date; snapped to that Tuesday's reset). */
+	event: { label: 'Current event', endsAt: '2026-12-08' },
 	/**
-	 * Season start instants (Tuesdays, 19:00 UTC). S1-S5 per esports.gg/Dexerto/Dotesports;
-	 * S6 (2026-12-08) per Dexerto. Later entries are estimates (9-week default) - replace
-	 * when Blizzard confirms. Lengths vary (8 or 9 weeks), so list them explicitly.
+	 * Season start dates. Seasons, events and patches all go live at the weekly reset
+	 * (Tue 11 AM PT / 2 PM ET; S5 launched Tue 6 Oct 2026 11 AM PT), so only the date
+	 * matters: every value is snapped to the nearest weekly reset. S1-S6 per
+	 * esports.gg/Dexerto/Dotesports; later entries are estimates (9-week default) -
+	 * replace when Blizzard confirms. Lengths vary (8 or 9 weeks), so list them explicitly.
 	 */
 	seasons: {
-		year: 2026,
 		starts: [
-			'2026-02-10T19:00:00Z', // S1
-			'2026-04-14T19:00:00Z', // S2
-			'2026-06-16T19:00:00Z', // S3
-			'2026-08-11T19:00:00Z', // S4
-			'2026-10-06T19:00:00Z', // S5
-			'2026-12-08T19:00:00Z', // S6
-			'2027-02-09T19:00:00Z', // S7 (estimate)
-			'2027-04-13T19:00:00Z' // S8 (estimate)
+			'2026-02-10', // 2026 S1
+			'2026-04-14', // 2026 S2
+			'2026-06-16', // 2026 S3
+			'2026-08-11', // 2026 S4
+			'2026-10-06', // 2026 S5
+			'2026-12-08', // 2026 S6
+			'2027-02-09', // 2027 S1 (estimate)
+			'2027-04-13' // 2027 S2 (estimate)
 		],
 		/** Length used past the last known start. */
 		defaultWeeks: 9
@@ -57,19 +56,35 @@ export interface BakedEvents {
 const baked = eventsJson as BakedEvents;
 
 /**
- * Season start instants (ISO UTC): fallback list plus season_start events,
- * sorted and deduped by instant. Fallback is returned as-is when there are none.
+ * Snap a date (`YYYY-MM-DD`) or ISO instant to the nearest weekly reset.
+ * Seasons, events and patches all go live at the weekly reset, so D1 rows with
+ * sloppy times (midnight UTC, 1 PM ET, ...) still land on the right instant.
+ * Returns NaN for unparseable input.
  */
-export function mergeSeasonStarts(fallback: readonly string[], data: BakedEvents): string[] {
-	const byInstant = new Map<number, string>();
-	for (const s of fallback) byInstant.set(Date.parse(s), s);
+export function snapToReset(input: string): number {
+	const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input);
+	// Date-only: noon ET-ish on that day, so it snaps to that day's reset.
+	const t = dateOnly
+		? Date.UTC(+dateOnly[1], +dateOnly[2] - 1, +dateOnly[3], 17)
+		: Date.parse(input);
+	if (Number.isNaN(t)) return NaN;
+	// First reset after (t - half a week) = the reset closest to t.
+	return nextOccurrence(CONFIG.weekly, t - WEEK / 2);
+}
+
+/**
+ * Season start instants (ms): fallback list plus season_start events,
+ * snapped to the weekly reset, sorted and deduped.
+ */
+export function mergeSeasonStarts(fallback: readonly string[], data: BakedEvents): number[] {
+	const out = new Set<number>();
+	for (const s of fallback) out.add(snapToReset(s));
 	for (const e of data.events) {
 		if (e.kind !== 'season_start' || !e.starts_at) continue;
-		const t = Date.parse(e.starts_at);
-		if (Number.isNaN(t)) continue;
-		byInstant.set(t, e.starts_at);
+		out.add(snapToReset(e.starts_at));
 	}
-	return [...byInstant.entries()].sort((a, b) => a[0] - b[0]).map(([, s]) => s);
+	out.delete(NaN);
+	return [...out].sort((a, b) => a - b);
 }
 
 export interface ActiveEvent {
@@ -86,7 +101,8 @@ export const MAX_EVENTS = 4;
 /**
  * All kind=event rows not yet ended (relative to `now`): live ones first by end time,
  * then upcoming ones by start time. Capped at `max`. Falls back to the single
- * hardcoded event when none qualify.
+ * hardcoded event when none qualify, or to nothing once that has ended too.
+ * Start and end are snapped to the weekly reset.
  */
 export function activeEvents(
 	fallback: { label: string; endsAt: string },
@@ -97,9 +113,9 @@ export function activeEvents(
 	const out: ActiveEvent[] = [];
 	for (const e of data.events) {
 		if (e.kind !== 'event' || !e.ends_at) continue;
-		const endsAt = Date.parse(e.ends_at);
+		const endsAt = snapToReset(e.ends_at);
 		if (Number.isNaN(endsAt) || endsAt <= now) continue;
-		const s = e.starts_at ? Date.parse(e.starts_at) : NaN;
+		const s = e.starts_at ? snapToReset(e.starts_at) : NaN;
 		const startsAt = Number.isNaN(s) ? undefined : s;
 		out.push({
 			label: e.name || fallback.label,
@@ -109,7 +125,8 @@ export function activeEvents(
 		});
 	}
 	if (out.length === 0) {
-		return [{ label: fallback.label, endsAt: Date.parse(fallback.endsAt), phase: 'live' }];
+		const endsAt = snapToReset(fallback.endsAt);
+		return endsAt > now ? [{ label: fallback.label, endsAt, phase: 'live' }] : [];
 	}
 	out.sort((a, b) => {
 		if (a.phase !== b.phase) return a.phase === 'live' ? -1 : 1;
@@ -118,7 +135,11 @@ export function activeEvents(
 	return out.slice(0, max);
 }
 
-const seasonStarts = mergeSeasonStarts(CONFIG.seasons.starts, baked);
+let seasonStartsCache: number[] | undefined;
+/** Lazy: snapping needs the formatters defined further down. */
+function seasonStarts(): number[] {
+	return (seasonStartsCache ??= mergeSeasonStarts(CONFIG.seasons.starts, baked));
+}
 
 export function currentEvents(now: number): ActiveEvent[] {
 	return activeEvents(CONFIG.event, baked, now);
@@ -249,74 +270,69 @@ export function urgency(ms: number): Urgency {
 	return 'normal';
 }
 
+/** End time in the viewer's own zone, e.g. `Tue 24 Nov, 20:00`. */
 export function formatLocal(ts: number, locale?: string): string {
 	return new Intl.DateTimeFormat(locale, {
 		weekday: 'short',
 		month: 'short',
 		day: 'numeric',
 		hour: '2-digit',
-		minute: '2-digit',
-		timeZoneName: 'short'
+		minute: '2-digit'
 	}).format(new Date(ts));
-}
-
-export function formatET(ts: number, locale = 'en-US'): string {
-	return new Intl.DateTimeFormat(locale, {
-		weekday: 'short',
-		hour: 'numeric',
-		minute: '2-digit',
-		timeZone: RESET_TZ,
-		timeZoneName: 'short'
-	}).format(new Date(ts));
-}
-
-export function localTzName(): string {
-	try {
-		return Intl.DateTimeFormat().resolvedOptions().timeZone;
-	} catch {
-		return 'UTC';
-	}
 }
 
 /* ---------- Seasons ---------- */
 
-export interface SeasonInfo {
+export interface SeasonRef {
+	/** 0-based index into the season list. */
+	index: number;
+	/** Year the season started in (ET). */
+	year: number;
+	/** Season number within that year: `2026: SEASON 5`. */
 	number: number;
-	label: string; // `2026: SEASON 5`
+	label: string;
 	start: number;
 	end: number;
+}
+
+export interface SeasonInfo extends SeasonRef {
 	weeks: number;
 	week: number; // current week, 1-based, clamped
 }
 
 /** Start/end of season at 0-based idx. Extrapolates past the known list. */
-export function seasonByIndex(idx: number): { number: number; start: number; end: number } {
-	const starts = seasonStarts.map((s) => Date.parse(s));
+export function seasonByIndex(idx: number): SeasonRef {
+	const starts = seasonStarts();
 	const len = CONFIG.seasons.defaultWeeks * WEEK;
 	const last = starts.length - 1;
 	const startOf = (i: number) => (i <= last ? starts[i] : starts[last] + (i - last) * len);
-	return { number: idx + 1, start: startOf(idx), end: startOf(idx + 1) };
+	const yearOf = (i: number) => parts(startOf(i), RESET_TZ).year;
+	const year = yearOf(idx);
+	// Numbering restarts every year (`2026: SEASON 5`, then `2027: SEASON 1`).
+	let number = 1;
+	for (let i = idx - 1; i >= 0 && yearOf(i) === year; i--) number++;
+	return {
+		index: idx,
+		year,
+		number,
+		label: `${year}: SEASON ${number}`,
+		start: startOf(idx),
+		end: startOf(idx + 1)
+	};
 }
 
 export function seasonAt(now: number): SeasonInfo {
 	let idx = 0;
 	while (seasonByIndex(idx + 1).start <= now) idx++;
-	const { start, end } = seasonByIndex(idx);
-	const weeks = Math.round((end - start) / WEEK);
-	const week = Math.min(weeks, Math.max(1, Math.floor((now - start) / WEEK) + 1));
-	return {
-		number: idx + 1,
-		label: `${CONFIG.seasons.year}: SEASON ${idx + 1}`,
-		start,
-		end,
-		weeks,
-		week
-	};
+	const ref = seasonByIndex(idx);
+	const weeks = Math.round((ref.end - ref.start) / WEEK);
+	const week = Math.min(weeks, Math.max(1, Math.floor((now - ref.start) / WEEK) + 1));
+	return { ...ref, weeks, week };
 }
 
 /* ---------- Aggregate ---------- */
 
-export type ResetId = 'daily' | 'weekly' | 'event' | 'season';
+export type ResetId = 'weekly' | 'event' | 'season';
 
 export interface ResetEntry {
 	/** Unique per card (events get one id each). */
@@ -360,7 +376,6 @@ export function allResets(now: number): ResetEntry[] {
 				})
 	);
 	return [
-		entry('daily', 'DAILY', nextOccurrence(CONFIG.daily, now)),
 		entry('weekly', 'WEEKLY', nextOccurrence(CONFIG.weekly, now)),
 		...events,
 		entry('season', 'SEASON', season.end)

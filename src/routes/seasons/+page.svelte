@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { clock } from '../../lib/now.svelte';
-	import { seasonAt, seasonByIndex, coarse, formatLocal, formatET } from '../../lib/resets';
+	import { seasonAt, seasonByIndex, coarse, formatLocal } from '../../lib/resets';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import TimeLeft from '#lib/components/TimeLeft.svelte';
 
@@ -9,7 +9,7 @@
 	const season = $derived(seasonAt(clock.now));
 	const remaining = $derived(season.end - clock.now);
 	const weeks = $derived(Array.from({ length: season.weeks }, (_, i) => i + 1));
-	const upcoming = $derived([seasonByIndex(season.number), seasonByIndex(season.number + 1)]);
+	const upcoming = $derived([seasonByIndex(season.index + 1), seasonByIndex(season.index + 2)]);
 </script>
 
 <svelte:head>
@@ -56,12 +56,10 @@
 				<div>
 					<dt class="label">STARTED</dt>
 					<dd>{formatLocal(season.start)}</dd>
-					<dd class="dim">{formatET(season.start)}</dd>
 				</div>
 				<div>
 					<dt class="label">ENDS</dt>
 					<dd>{formatLocal(season.end)}</dd>
-					<dd class="dim">{formatET(season.end)}</dd>
 				</div>
 			</dl>
 		</section>
@@ -69,14 +67,13 @@
 		<section class="panel" aria-labelledby="next">
 			<h2 id="next" class="display heading">NEXT SEASONS</h2>
 			<ul class="rows">
-				{#each upcoming as s (s.number)}
+				{#each upcoming as s (s.index)}
 					<li class="row">
 						<span class="display num-ghost" aria-hidden="true">{s.number}</span>
-						<span class="label sname">SEASON {s.number}</span>
+						<span class="label sname">{s.label}</span>
 						<span class="starts">
 							<span class="label dimlabel">STARTS</span>
 							{formatLocal(s.start)}
-							<span class="dim">({formatET(s.start)})</span>
 						</span>
 					</li>
 				{/each}
@@ -199,11 +196,6 @@
 		margin: 2px 0 0;
 		font-size: 18px;
 	}
-	.dim {
-		color: var(--text-dim);
-		font-size: 14px;
-	}
-
 	.rows {
 		list-style: none;
 		margin: 0;
