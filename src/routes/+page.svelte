@@ -2,7 +2,7 @@
 	import { clock } from '../lib/now.svelte';
 	import { allResets, nextReset, seasonAt, formatCountdown } from '../lib/resets';
 	import { resolve } from '$app/paths';
-	import { HOME_TITLE, HOME_DESCRIPTION, jsonLdScript, websiteJsonLd } from '../lib/seo';
+	import { HOME_TITLE, HOME_DESCRIPTION, FAQS, jsonLdScript, websiteJsonLd } from '../lib/seo';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import ResetCard from '#lib/components/ResetCard.svelte';
 	import ZoneTable from '#lib/components/ZoneTable.svelte';
@@ -138,6 +138,38 @@
 				{/each}
 			</ul>
 		</section>
+
+		<section class="feature faq-card" aria-labelledby="faq">
+			<span class="sheen" aria-hidden="true"></span>
+			<svg viewBox="0 0 120 120" class="glyph" aria-hidden="true">
+				<circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="8" />
+				<path
+					d="M44 46c0-9 7-15 16-15s16 6 16 14c0 14-16 13-16 28M60 90v4"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="8"
+				/>
+			</svg>
+			<div class="intro-col">
+				<p class="label kicker">QUESTIONS</p>
+				<h2 id="faq" class="display heading">OVERWATCH RESET FAQ</h2>
+				<p class="lede">
+					Quick answers about reset times and seasons. More on the
+					<a href={resolve('/faq')}>full FAQ page</a>.
+				</p>
+			</div>
+			<div class="body-col faq-list">
+				{#each FAQS as f, i (f.q)}
+					<details class="qa" open={i === 0}>
+						<summary class="q">
+							<span class="label qtext">{f.q}</span>
+							<span class="chev" aria-hidden="true"></span>
+						</summary>
+						<p class="a">{f.a}</p>
+					</details>
+				{/each}
+			</div>
+		</section>
 	</div>
 </div>
 
@@ -191,6 +223,57 @@
 		box-shadow:
 			0 1px 0 rgb(255 255 255 / 0.18) inset,
 			0 18px 32px -14px rgb(4 8 30 / 0.7);
+	}
+	.faq-card {
+		--c1: #b3274f;
+		--c2: #8f1636;
+		--c3: #4a0a1d;
+	}
+	.faq-list {
+		display: grid;
+		gap: 10px;
+		align-content: start;
+	}
+	.qa {
+		background: rgb(5 8 24 / 0.45);
+		border-left: 4px solid var(--gold);
+	}
+	.q {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		min-height: 44px;
+		padding: 14px 18px;
+		cursor: pointer;
+		list-style: none;
+	}
+	.q::-webkit-details-marker {
+		display: none;
+	}
+	.qtext {
+		font-size: 22px;
+		line-height: 1.1;
+	}
+	.chev {
+		flex: none;
+		width: 10px;
+		height: 10px;
+		border-right: 3px solid var(--gold);
+		border-bottom: 3px solid var(--gold);
+		transform: rotate(45deg);
+		margin-top: -4px;
+	}
+	.qa[open] .chev {
+		transform: rotate(-135deg);
+		margin-top: 4px;
+	}
+	.a {
+		margin: 0;
+		padding: 0 18px 16px;
+		font-size: 15px;
+		line-height: 1.5;
+		color: rgb(255 255 255 / 0.8);
 	}
 	.zones-card {
 		--c1: #2a8cf0;
