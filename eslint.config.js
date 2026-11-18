@@ -36,6 +36,9 @@ export default defineConfig(
 	{
 		// Override or add rule settings here, such as:
 		// 'svelte/button-has-type': 'error'
-		rules: {}
+		rules: {
+			// {@html} is only used for JSON-LD built by jsonLdScript() from our own constants.
+			'svelte/no-at-html-tags': 'off'
+		}
 	}
 );

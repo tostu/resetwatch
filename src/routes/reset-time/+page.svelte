@@ -81,8 +81,8 @@
 		{#if gapRows.length}
 			<p class="note">
 				<span class="label">* GAP WEEKS</span>
-				For about three weeks in March and one week around the end of October, US clocks are on
-				daylight time while Europe is not. The reset then lands one hour earlier:
+				For about three weeks in March and one week around the end of October, US clocks are on daylight
+				time while Europe is not. The reset then lands one hour earlier:
 				{#each gapRows as { z, r }, i (z.slug)}
 					{z.short}
 					{r.gap!.time}{i < gapRows.length - 1 ? ', ' : '.'}

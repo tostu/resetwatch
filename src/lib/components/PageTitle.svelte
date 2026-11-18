@@ -9,6 +9,7 @@
 
 <header class="page-title">
 	<h1 class="display title" data-ghost={title}>
+		<!-- eslint-disable-next-line svelte/no-useless-mustaches -- {' '} keeps the word spacing -->
 		{#if srPrefix}<span class="sr-only">{srPrefix}</span>{' '}{/if}{title}{#if srSuffix}{' '}<span
 				class="sr-only">{srSuffix}</span
 			>{/if}

@@ -105,6 +105,7 @@
 							<span class="label dimlabel">STARTS</span>
 							{formatLocal(s.start, undefined, displayZone.zone)}
 						</span>
+						<!-- eslint-disable svelte/no-navigation-without-resolve -- external URL -->
 						<a
 							class="label cal"
 							href={googleCalendarUrl(s)}
@@ -112,6 +113,7 @@
 							rel="noopener"
 							aria-label="Add {s.label} start to Google Calendar">+ GOOGLE CALENDAR</a
 						>
+						<!-- eslint-enable svelte/no-navigation-without-resolve -->
 					</li>
 				{/each}
 			</ul>
