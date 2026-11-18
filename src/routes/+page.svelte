@@ -2,8 +2,16 @@
 	import { clock } from '../lib/now.svelte';
 	import { allResets, nextReset, seasonAt, formatCountdown } from '../lib/resets';
 	import { resolve } from '$app/paths';
-	import { HOME_TITLE, HOME_DESCRIPTION, FAQS, jsonLdScript, websiteJsonLd } from '../lib/seo';
+	import {
+		HOME_TITLE,
+		HOME_DESCRIPTION,
+		FAQS,
+		faqJsonLd,
+		jsonLdScript,
+		websiteJsonLd
+	} from '../lib/seo';
 	import PageTitle from '#lib/components/PageTitle.svelte';
+	import TzSwitch from '#lib/components/TzSwitch.svelte';
 	import ResetCard from '#lib/components/ResetCard.svelte';
 	import ZoneTable from '#lib/components/ZoneTable.svelte';
 
@@ -66,6 +74,7 @@
 	<meta name="twitter:title" content={HOME_TITLE} />
 	<meta name="twitter:description" content={HOME_DESCRIPTION} />
 	{@html jsonLdScript(websiteJsonLd())}
+	{@html jsonLdScript(faqJsonLd())}
 </svelte:head>
 
 <div class="wrap page">
@@ -82,8 +91,14 @@
 		The Overwatch weekly reset is every <strong>Tuesday at 2 PM ET / 11 AM PT</strong>, which is
 		19:00 UTC in winter and 18:00 UTC in summer. Below are live countdowns to the reset, the current
 		event and the season end, in your local time. See the full
-		<a href={resolve('/seasons')}>season schedule</a> for week-by-week progress.
+		<a href={resolve('/seasons')}>season schedule</a> for week-by-week progress, or
+		<a href={resolve('/seasons.ics')} data-sveltekit-reload
+			>add the season launches to your calendar</a
+		>
+		(.ics).
 	</p>
+
+	<div class="tz-row"><TzSwitch /></div>
 
 	<div class="grid">
 		{#each resets as r, i (r.id)}
@@ -96,6 +111,10 @@
 				phase={r.phase}
 				isNext={r.id === next.id}
 				index={i}
+				badge={r.kind === 'event' && r.phase === 'live' && r.endsAt === season.end
+					? 'ENDS WITH SEASON'
+					: undefined}
+				progress={r.kind === 'season' ? { week: season.week, weeks: season.weeks } : undefined}
 			/>
 		{/each}
 	</div>
@@ -195,6 +214,10 @@
 	.intro a {
 		color: inherit;
 		text-underline-offset: 3px;
+	}
+	.tz-row {
+		margin: 0 0 20px;
+		min-height: 32px;
 	}
 	/* Card count varies with the number of events: wrap instead of a fixed column count. */
 	.grid {

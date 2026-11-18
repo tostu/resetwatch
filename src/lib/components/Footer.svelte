@@ -38,6 +38,11 @@
 					>official Overwatch news</a
 				>.
 			</p>
+			<p class="disclaimer">
+				For bots and overlays:
+				<a class="inline" href={resolve('/api/status.json')} data-sveltekit-reload>status.json</a>
+				(schedule snapshot, refreshed on every deploy).
+			</p>
 			<p class="copy">© {year} {SITE_NAME}</p>
 		</div>
 

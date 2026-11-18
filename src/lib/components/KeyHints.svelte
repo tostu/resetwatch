@@ -21,6 +21,12 @@
 			case '2':
 				goto(resolve('/seasons'));
 				break;
+			case '3':
+				goto(resolve('/reset-time'));
+				break;
+			case '4':
+				goto(resolve('/faq'));
+				break;
 			case '?':
 				showHelp = !showHelp;
 				break;
@@ -34,6 +40,8 @@
 	<div class="group">
 		<span class="hint"><kbd>1</kbd> <span class="label">RESETS</span></span>
 		<span class="hint"><kbd>2</kbd> <span class="label">SEASONS</span></span>
+		<span class="hint"><kbd>3</kbd> <span class="label">TIME ZONES</span></span>
+		<span class="hint"><kbd>4</kbd> <span class="label">FAQ</span></span>
 		<button type="button" class="hint help" onclick={() => (showHelp = !showHelp)}>
 			<kbd>?</kbd> <span class="label">SHORTCUTS</span>
 		</button>
@@ -43,7 +51,7 @@
 {#if showHelp}
 	<div class="help-panel" role="note">
 		<p class="label">SHORTCUTS</p>
-		<p>1: Resets. 2: Seasons. ?: toggle this panel.</p>
+		<p>1: Resets. 2: Seasons. 3: Time zones. 4: FAQ. ?: toggle this panel.</p>
 	</div>
 {/if}
 
@@ -125,7 +133,8 @@
 		margin: 0;
 	}
 
-	@media (max-width: 719px) {
+	/* Touch devices have no keyboard: hide at any width (tablets too), not just phones. */
+	@media (max-width: 719px), (pointer: coarse) {
 		.hints,
 		.help-panel {
 			display: none;

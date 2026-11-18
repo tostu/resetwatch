@@ -1,5 +1,12 @@
 /_app/immutable/*
   Cache-Control: public, max-age=31536000, immutable
 
+/api/status.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300
+
+/seasons.ics
+  Cache-Control: public, max-age=3600
+
 /og.png
   Cache-Control: public, max-age=86400

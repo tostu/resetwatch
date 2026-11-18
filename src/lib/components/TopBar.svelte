@@ -23,7 +23,9 @@
 			side: 'r',
 			dot: season.end - clock.now < 7 * 86_400_000,
 			dotText: 'season ends this week'
-		}
+		},
+		{ href: '/reset-time', label: 'TIME ZONES', side: 'l', sub: true, dot: false, dotText: '' },
+		{ href: '/faq', label: 'FAQ', side: 'r', sub: true, dot: false, dotText: '' }
 	] as const);
 
 	$effect(() => clock.start());
@@ -53,6 +55,7 @@
 		{#each tabs as tab (tab.href)}
 			<a
 				class="tab tab-{tab.side} label"
+				class:sub={'sub' in tab}
 				class:active={isActive(tab.href)}
 				href={resolve(tab.href)}
 				aria-current={isActive(tab.href) ? 'page' : undefined}
@@ -109,7 +112,7 @@
 		z-index: 50;
 		height: var(--bar-h);
 		display: grid;
-		grid-template-columns: 1fr auto auto auto 1fr;
+		grid-template-columns: 1fr auto auto auto auto auto 1fr;
 		align-items: stretch;
 		background: linear-gradient(180deg, #131c32 0%, var(--bar) 100%);
 		box-shadow:
@@ -165,14 +168,33 @@
 		transition: color 120ms ease;
 	}
 
+	/* Columns: brand | TIME ZONES | RESETS | plate | SEASONS | FAQ | season status. */
 	.tab-l {
-		grid-column: 2;
+		grid-column: 3;
 		margin-right: 4px;
 	}
 
 	.tab-r {
-		grid-column: 4;
+		grid-column: 5;
 		margin-left: 4px;
+	}
+
+	/* Secondary links sit outside the main pair: smaller and quieter. */
+	.tab.sub {
+		min-width: 0;
+		padding: 0 18px;
+		font-size: 16px;
+		color: rgb(255 255 255 / 0.62);
+	}
+
+	.tab-l.sub {
+		grid-column: 2;
+		margin-right: 0;
+	}
+
+	.tab-r.sub {
+		grid-column: 6;
+		margin-left: 0;
 	}
 
 	/* Slanted fill behind the label, parallel to the plate's side it touches. */
@@ -244,7 +266,7 @@
 	.plate-wrap {
 		--edge: var(--blue-edge);
 		--glow: rgb(63 169 255 / 0.5);
-		grid-column: 3;
+		grid-column: 4;
 		grid-row: 1;
 		position: relative;
 		width: var(--plate-w);
@@ -354,7 +376,7 @@
 	/* ---------- right: season status ---------- */
 
 	.right {
-		grid-column: 5;
+		grid-column: 7;
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
@@ -449,8 +471,13 @@
 			padding: 0 12px;
 		}
 		.tab {
-			min-width: 116px;
+			min-width: 96px;
+			padding: 0 14px;
 			font-size: 18px;
+		}
+		.tab.sub {
+			padding: 0 10px;
+			font-size: 14px;
 		}
 	}
 
@@ -482,11 +509,14 @@
 			border-top: 1px solid #070b15;
 		}
 
-		.tab {
+		.tab,
+		.tab.sub {
 			flex: 1;
 			min-width: 0;
 			margin: 0;
-			font-size: 18px;
+			padding: 0 4px;
+			font-size: 15px;
+			color: rgb(255 255 255 / 0.84);
 		}
 
 		.tab::before,

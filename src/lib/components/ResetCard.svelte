@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatCountdown, coarse, urgency, formatLocal } from '../resets';
+	import { displayZone } from '../timezone.svelte';
 
 	type Kind = 'weekly' | 'event' | 'season';
 
@@ -12,8 +13,14 @@
 		phase = 'live',
 		isNext = false,
 		index = 0,
-		note
+		note,
+		badge,
+		progress
 	}: {
+		/** Small pill under the countdown, e.g. `ENDS WITH SEASON`. */
+		badge?: string;
+		/** Season week progress bar. */
+		progress?: { week: number; weeks: number };
 		label: string;
 		kind: Kind;
 		kicker: string;
@@ -82,8 +89,30 @@
 
 		<p class="when">
 			<span class="label">{upcoming ? 'STARTS' : 'ENDS'}</span>
-			<time datetime={new Date(endsAt).toISOString()}>{formatLocal(endsAt)}</time>
+			<time datetime={new Date(endsAt).toISOString()}
+				>{formatLocal(endsAt, undefined, displayZone.zone)}</time
+			>
 		</p>
+
+		{#if progress}
+			<div
+				class="progress"
+				role="progressbar"
+				aria-label="Season progress"
+				aria-valuemin="1"
+				aria-valuemax={progress.weeks}
+				aria-valuenow={progress.week}
+				aria-valuetext="Week {progress.week} of {progress.weeks}"
+			>
+				<span class="label cap">WEEK {progress.week}/{progress.weeks}</span>
+				<span class="segs" aria-hidden="true">
+					{#each Array.from({ length: progress.weeks }, (_, i) => i + 1) as w (w)}
+						<span class="seg" class:done={w < progress.week} class:cur={w === progress.week}></span>
+					{/each}
+				</span>
+			</div>
+		{/if}
+		{#if badge}<p class="badge label">{badge}</p>{/if}
 
 		{#if note}<p class="note">{note}</p>{/if}
 	</div>
@@ -334,6 +363,40 @@
 	.when .label {
 		font-size: 12px;
 		color: rgb(255 255 255 / 0.7);
+	}
+
+	.progress {
+		margin-top: 10px;
+		display: grid;
+		gap: 5px;
+	}
+	.cap {
+		font-size: 12px;
+		color: rgb(255 255 255 / 0.75);
+	}
+	.segs {
+		display: flex;
+		gap: 3px;
+	}
+	.seg {
+		flex: 1;
+		height: 6px;
+		background: rgb(255 255 255 / 0.2);
+	}
+	.seg.done {
+		background: rgb(255 255 255 / 0.85);
+	}
+	.seg.cur {
+		background: var(--gold);
+	}
+	.badge {
+		align-self: flex-start;
+		margin: 10px 0 0;
+		padding: 3px 8px;
+		font-size: 12px;
+		color: var(--text);
+		background: rgb(5 8 24 / 0.5);
+		border-left: 3px solid var(--gold);
 	}
 
 	.note {

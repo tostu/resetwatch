@@ -9,6 +9,9 @@
 		jsonLdScript
 	} from '../../lib/seo';
 	import { seasonSlug } from '../../lib/season-pages';
+	import { googleCalendarUrl } from '../../lib/calendar';
+	import { displayZone } from '../../lib/timezone.svelte';
+	import TzSwitch from '#lib/components/TzSwitch.svelte';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import TimeLeft from '#lib/components/TimeLeft.svelte';
 
@@ -45,6 +48,7 @@
 		/>
 		<TimeLeft ms={remaining} label="SEASON ENDS" />
 	</div>
+	<div class="tz-row"><TzSwitch /></div>
 
 	<section class="panel" aria-labelledby="progress">
 		<h2 id="progress" class="display heading">WEEK {season.week} OF {season.weeks}</h2>
@@ -75,11 +79,11 @@
 			<dl class="dates">
 				<div>
 					<dt class="label">STARTED</dt>
-					<dd>{formatLocal(season.start)}</dd>
+					<dd>{formatLocal(season.start, undefined, displayZone.zone)}</dd>
 				</div>
 				<div>
 					<dt class="label">ENDS</dt>
-					<dd>{formatLocal(season.end)}</dd>
+					<dd>{formatLocal(season.end, undefined, displayZone.zone)}</dd>
 				</div>
 			</dl>
 		</section>
@@ -99,11 +103,24 @@
 						{/if}
 						<span class="starts">
 							<span class="label dimlabel">STARTS</span>
-							{formatLocal(s.start)}
+							{formatLocal(s.start, undefined, displayZone.zone)}
 						</span>
+						<a
+							class="label cal"
+							href={googleCalendarUrl(s)}
+							target="_blank"
+							rel="noopener"
+							aria-label="Add {s.label} start to Google Calendar">+ GOOGLE CALENDAR</a
+						>
 					</li>
 				{/each}
 			</ul>
+			<p class="ics">
+				<a href={resolve('/seasons.ics')} data-sveltekit-reload
+					>Download all upcoming launches (.ics)</a
+				>
+				for Apple Calendar, Outlook and others.
+			</p>
 		</section>
 
 		<p class="note">
@@ -118,6 +135,24 @@
 </div>
 
 <style>
+	.tz-row {
+		margin: 0 0 20px;
+		min-height: 32px;
+	}
+	.cal {
+		font-size: 12px;
+		color: var(--cyan);
+		text-underline-offset: 3px;
+	}
+	.ics {
+		margin: 12px 0 0;
+		font-size: 14px;
+		color: var(--text-dim);
+	}
+	.ics a {
+		color: inherit;
+		text-underline-offset: 3px;
+	}
 	.note {
 		margin: 0;
 		font-size: 14px;

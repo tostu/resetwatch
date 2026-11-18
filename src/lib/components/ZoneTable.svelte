@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { CONFIG, nextOccurrence, tzOffset } from '../resets';
+	import { displayZone } from '../timezone.svelte';
 
 	let { now }: { now: number } = $props();
 
@@ -23,14 +23,18 @@
 		{ tz: 'Europe/Berlin', city: 'Berlin', abbr: 'CET', h12: false, slug: 'cet' },
 		{ tz: 'Asia/Kolkata', city: 'Mumbai', abbr: 'IST', h12: false, slug: 'ist' },
 		{ tz: 'Asia/Tokyo', city: 'Tokyo', abbr: 'JST', h12: false, slug: 'jst' },
+		// Abbreviation is looked up per date below: AEDT in summer, AEST in winter.
 		{ tz: 'Australia/Sydney', city: 'Sydney', abbr: 'AET', h12: false, slug: 'aest' }
 	];
 
-	// Set after hydration so the server-rendered table stays identical for every visitor.
-	let myTz = $state('');
-	onMount(() => {
-		myTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	});
+	/** Sydney's label follows its actual offset (UTC+11 = AEDT, UTC+10 = AEST). */
+	function abbrAt(z: Zone, ts: number): string {
+		if (z.tz !== 'Australia/Sydney') return z.abbr;
+		return tzOffset(ts, z.tz) === 11 * 3_600_000 ? 'AEDT' : 'AEST';
+	}
+
+	// Empty until hydration so the server-rendered table stays identical for every visitor.
+	const myTz = $derived(displayZone.zone);
 
 	const reset = $derived(nextOccurrence(CONFIG.weekly, now));
 
@@ -66,6 +70,7 @@
 		}
 		return zones.map((z) => ({
 			...z,
+			abbr: abbrAt(z, reset),
 			...whenIn(reset, z.tz, z.h12),
 			offset: offsetLabel(reset, z.tz),
 			you: z.tz === myTz

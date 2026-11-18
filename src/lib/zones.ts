@@ -184,10 +184,28 @@ function resetAt(z: ZonePage, ts: number, abbr: string): ZoneReset {
 	};
 }
 
-export function zoneResets(z: ZonePage): { std: ZoneReset; dst: ZoneReset; shifts: boolean } {
+/**
+ * Tuesday inside the March gap: US clocks already on daylight time (since the second Sunday
+ * of March), European clocks still on standard time (until the last Sunday). The same
+ * situation recurs for a week around the end of October.
+ */
+const GAP_REF = refInstant(2027, 3, 16); // Tue
+
+export function zoneResets(z: ZonePage): {
+	std: ZoneReset;
+	dst: ZoneReset;
+	/** Europe only: reset time during the weeks US clocks are ahead of European clocks. */
+	gap?: ZoneReset;
+	shifts: boolean;
+} {
 	const std = resetAt(z, STD_REF, z.abbrStd);
 	const dst = resetAt(z, DST_REF, z.abbrDst);
-	return { std, dst, shifts: std.time !== dst.time || std.dayLong !== dst.dayLong };
+	const shifts = std.time !== dst.time || std.dayLong !== dst.dayLong;
+	if (z.tz.startsWith('Europe/')) {
+		const gap = resetAt(z, GAP_REF, z.abbrStd);
+		if (gap.time !== dst.time) return { std, dst, gap, shifts };
+	}
+	return { std, dst, shifts };
 }
 
 /** One-sentence answer, used on the page, in the FAQ markup and in the meta description. */

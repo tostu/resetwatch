@@ -270,17 +270,28 @@ export function urgency(ms: number): Urgency {
 	return 'normal';
 }
 
-/** End time in the viewer's own zone, e.g. `Tue 24 Nov, 20:00`. */
-export function formatLocal(ts: number, locale?: string): string {
-	return new Intl.DateTimeFormat(locale, {
+/**
+ * Time in the viewer's zone, e.g. `Tue, Nov 24, 20:00 CET`. Pass `tz` (IANA) to pin the zone;
+ * without it the runtime's zone is used (UTC during prerender, so the label stays explicit
+ * until the client swaps in local time).
+ */
+export function formatLocal(ts: number, locale?: string, tz?: string): string {
+	const opts: Intl.DateTimeFormatOptions = {
 		weekday: 'short',
 		month: 'short',
 		day: 'numeric',
 		hour: '2-digit',
 		minute: '2-digit',
-		// Server render is UTC; the label keeps that explicit until the client swaps in local time.
+		timeZone: tz || undefined,
 		timeZoneName: 'short'
-	}).format(new Date(ts));
+	};
+	const text = new Intl.DateTimeFormat(locale, opts).format(new Date(ts));
+	// en-US prints `GMT+1`; en-GB knows `CET`/`BST`. Prefer the readable abbreviation.
+	if (!locale && /GMT[+-]/.test(text)) {
+		const alt = new Intl.DateTimeFormat('en-GB', opts).format(new Date(ts));
+		if (!/GMT[+-]/.test(alt)) return alt;
+	}
+	return text;
 }
 
 /* ---------- Seasons ---------- */

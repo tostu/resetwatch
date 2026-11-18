@@ -4,10 +4,15 @@
 	import KeyHints from '#lib/components/KeyHints.svelte';
 	import Footer from '#lib/components/Footer.svelte';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { displayZone } from '../lib/timezone.svelte';
 	import { absolute, OG_IMAGE, OG_IMAGE_ALT, SITE_NAME } from '../lib/seo';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
+
+	// Detect the viewer's zone once; local-time labels switch from UTC to it.
+	onMount(() => displayZone.init());
 
 	const canonical = $derived(absolute(page.url.pathname === '/' ? '/' : page.url.pathname));
 

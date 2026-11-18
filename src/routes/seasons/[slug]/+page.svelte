@@ -12,6 +12,7 @@
 		endAnswer
 	} from '../../../lib/season-pages';
 	import { breadcrumbJsonLd, jsonLdScript } from '../../../lib/seo';
+	import { displayZone } from '../../../lib/timezone.svelte';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import TimeLeft from '#lib/components/TimeLeft.svelte';
 	import type { PageProps } from './$types';
@@ -89,8 +90,10 @@
 			<h2 id="start" class="display heading">{q[0].q}</h2>
 			<p>{q[0].a}</p>
 			<p>
-				Your local start time: <strong>{formatLocal(d.season.start)}</strong>. Seasons go live at
-				the <a href={resolve('/')}>weekly reset</a>, so the time in your zone is on the
+				Your local start time: <strong
+					>{formatLocal(d.season.start, undefined, displayZone.zone)}</strong
+				>. Seasons go live at the <a href={resolve('/')}>weekly reset</a>, so the time in your zone
+				is on the
 				<a href={resolve('/reset-time')}>reset time by time zone</a> pages.
 			</p>
 		</section>
@@ -98,7 +101,11 @@
 		<section class="panel" aria-labelledby="end">
 			<h2 id="end" class="display heading">{q[1].q}</h2>
 			<p>{q[1].a}</p>
-			<p>Your local end time: <strong>{formatLocal(d.season.end)}</strong>.</p>
+			<p>
+				Your local end time: <strong
+					>{formatLocal(d.season.end, undefined, displayZone.zone)}</strong
+				>.
+			</p>
 		</section>
 
 		<section class="panel" aria-labelledby="weeks">
@@ -115,7 +122,7 @@
 					{#each weekStarts as ts, i (ts)}
 						<tr>
 							<th scope="row" class="label">WEEK {i + 1}</th>
-							<td class="num">{formatLocal(ts)}</td>
+							<td class="num">{formatLocal(ts, undefined, displayZone.zone)}</td>
 						</tr>
 					{/each}
 				</tbody>
