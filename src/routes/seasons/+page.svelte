@@ -152,7 +152,7 @@
 		color: var(--text-dim);
 	}
 	.ics a {
-		color: inherit;
+		color: var(--cyan);
 		text-underline-offset: 3px;
 	}
 	.note {

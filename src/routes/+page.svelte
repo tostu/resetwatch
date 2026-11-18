@@ -93,9 +93,8 @@
 		event and the season end, in your local time. See the full
 		<a href={resolve('/seasons')}>season schedule</a> for week-by-week progress, or
 		<a href={resolve('/seasons.ics')} data-sveltekit-reload
-			>add the season launches to your calendar</a
+			>add the season launches to your calendar.</a
 		>
-		(.ics).
 	</p>
 
 	<div class="tz-row"><TzSwitch /></div>
@@ -212,7 +211,7 @@
 		color: var(--text-dim);
 	}
 	.intro a {
-		color: inherit;
+		color: var(--cyan);
 		text-underline-offset: 3px;
 	}
 	.tz-row {
