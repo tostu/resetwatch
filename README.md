@@ -16,8 +16,8 @@ Live countdown to the Overwatch **weekly reset**, the current **event end** and 
 - Responsive: top bar on desktop, bottom tab bar on mobile.
 - SEO basics: static title and description, JSON-LD (WebSite, FAQPage), `sitemap.xml`, `robots.txt`, `llms.txt`.
 
-| Seasons | Mobile |
-| --- | --- |
+| Seasons                                                          | Mobile                                                                |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------- |
 | ![Seasons page with week progress](docs/screenshots/seasons.png) | <img src="docs/screenshots/mobile.png" alt="Mobile home" width="260"> |
 
 ## How it works
@@ -50,26 +50,26 @@ Without D1 credentials the site runs on the hardcoded fallbacks in `CONFIG`.
 
 ### Scripts
 
-| Command | What it does |
-| --- | --- |
-| `bun run dev` | Vite dev server |
-| `bun run build` | Bake events from D1, check Worker types, build to `build/` |
-| `bun run preview` | Serve the production build on port 4173 |
-| `bun run fetch-events` | Only refresh `src/lib/data/events.json` |
-| `bun run check` | Svelte and TypeScript checks |
-| `bun run lint` / `format` | Prettier and ESLint |
-| `bun run test:unit` | Vitest |
-| `bun run test:e2e` | Playwright |
+| Command                   | What it does                                               |
+| ------------------------- | ---------------------------------------------------------- |
+| `bun run dev`             | Vite dev server                                            |
+| `bun run build`           | Bake events from D1, check Worker types, build to `build/` |
+| `bun run preview`         | Serve the production build on port 4173                    |
+| `bun run fetch-events`    | Only refresh `src/lib/data/events.json`                    |
+| `bun run check`           | Svelte and TypeScript checks                               |
+| `bun run lint` / `format` | Prettier and ESLint                                        |
+| `bun run test:unit`       | Vitest                                                     |
+| `bun run test:e2e`        | Playwright                                                 |
 
 ### Configuration
 
 Copy `.env.example` to `.env`. All three are optional:
 
-| Variable | Purpose |
-| --- | --- |
-| `CF_API_TOKEN` | Cloudflare API token with Account > D1 > Read |
-| `CF_ACCOUNT_ID` | Cloudflare account id |
-| `D1_DATABASE_ID` | D1 database id of `resetwatch` |
+| Variable         | Purpose                                       |
+| ---------------- | --------------------------------------------- |
+| `CF_API_TOKEN`   | Cloudflare API token with Account > D1 > Read |
+| `CF_ACCOUNT_ID`  | Cloudflare account id                         |
+| `D1_DATABASE_ID` | D1 database id of `resetwatch`                |
 
 Set the same three as build variables in Cloudflare Workers Builds. The ingest Worker's `REBUILD_HOOK_URL` secret must point to this project's deploy hook.
 

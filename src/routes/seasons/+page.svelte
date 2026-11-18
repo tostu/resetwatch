@@ -97,10 +97,27 @@
 				{/each}
 			</ul>
 		</section>
+
+		<p class="note">
+			Season dates follow press reports of Blizzard's announced schedule. Start dates for 2027
+			seasons are estimates until Blizzard confirms them. Check the
+			<a href="https://overwatch.blizzard.com/en-us/news/" rel="noopener">official Overwatch news</a
+			>
+			for the final word.
+		</p>
 	</div>
 </div>
 
 <style>
+	.note {
+		margin: 0;
+		font-size: 14px;
+		color: var(--text-dim);
+	}
+	.note a {
+		color: inherit;
+		text-decoration: underline;
+	}
 	.page {
 		padding-block: 24px 48px;
 		padding-inline: 16px;

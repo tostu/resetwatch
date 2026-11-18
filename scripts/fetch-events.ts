@@ -28,7 +28,8 @@ interface Row {
 	ends_at: string | null;
 }
 
-const validDate = (v: unknown): v is string => typeof v === 'string' && !Number.isNaN(Date.parse(v));
+const validDate = (v: unknown): v is string =>
+	typeof v === 'string' && !Number.isNaN(Date.parse(v));
 
 async function existing(): Promise<{ generatedAt: string | null; events: Row[] } | null> {
 	try {

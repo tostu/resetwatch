@@ -3,7 +3,8 @@ export const SITE_URL = 'https://resetwatch.tostu.net';
 export const SITE_NAME = 'Resetwatch';
 
 export const OG_IMAGE = `${SITE_URL}/og.png`;
-export const OG_IMAGE_ALT = 'Resetwatch: Overwatch weekly reset countdown, every Tuesday 2 PM ET / 11 AM PT';
+export const OG_IMAGE_ALT =
+	'Resetwatch: Overwatch weekly reset countdown, every Tuesday 2 PM ET / 11 AM PT';
 
 export const HOME_TITLE = 'Overwatch Weekly Reset Countdown: Next Reset Time | Resetwatch';
 export const HOME_DESCRIPTION =
@@ -60,7 +61,15 @@ export function websiteJsonLd() {
 				url: `${SITE_URL}/`,
 				name: SITE_NAME,
 				description: HOME_DESCRIPTION,
-				inLanguage: 'en'
+				inLanguage: 'en',
+				publisher: { '@id': `${SITE_URL}/#org` }
+			},
+			{
+				'@type': 'Organization',
+				'@id': `${SITE_URL}/#org`,
+				name: SITE_NAME,
+				url: `${SITE_URL}/`,
+				logo: OG_IMAGE
 			},
 			{
 				'@type': 'WebApplication',

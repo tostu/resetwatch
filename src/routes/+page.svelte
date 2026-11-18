@@ -72,8 +72,8 @@
 
 	<p class="intro">
 		The Overwatch weekly reset is every <strong>Tuesday at 2 PM ET / 11 AM PT</strong>, which is
-		19:00 UTC in winter and 18:00 UTC in summer. Below are live countdowns to the reset, the
-		current event and the season end, in your local time. See the full
+		19:00 UTC in winter and 18:00 UTC in summer. Below are live countdowns to the reset, the current
+		event and the season end, in your local time. See the full
 		<a href={resolve('/seasons')}>season schedule</a> for week-by-week progress.
 	</p>
 
@@ -94,10 +94,11 @@
 
 	<!-- Collapsed by default; content stays in the DOM for crawlers. -->
 	<details class="info">
-		<summary aria-label="About the Overwatch reset times"><span aria-hidden="true">?</span></summary>
+		<summary aria-label="About the Overwatch reset times"><span aria-hidden="true">?</span></summary
+		>
 		<p>
-			The Overwatch weekly reset happens every Tuesday at 2 PM ET / 11 AM PT. Weekly challenges,
-			the item shop and Mythic Shop rotation, arcade modes and limited-time events all follow that
+			The Overwatch weekly reset happens every Tuesday at 2 PM ET / 11 AM PT. Weekly challenges, the
+			item shop and Mythic Shop rotation, arcade modes and limited-time events all follow that
 			schedule, and each season ends at a Tuesday reset. All times above are shown in your local
 			time zone.
 		</p>

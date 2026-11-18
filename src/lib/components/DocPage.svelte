@@ -2,11 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import PageTitle from './PageTitle.svelte';
 
-	let {
-		title,
-		subtitle,
-		children
-	}: { title: string; subtitle?: string; children: Snippet } = $props();
+	let { title, subtitle, children }: { title: string; subtitle?: string; children: Snippet } =
+		$props();
 </script>
 
 <div class="wrap page">

@@ -22,7 +22,9 @@
 		This is technically necessary and based on our legitimate interest in running a secure website
 		(Art. 6 (1) (f) GDPR). We do not have access to your identity from this data and do not combine
 		it with anything else. See
-		<a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer">Cloudflare's privacy policy</a>
+		<a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer"
+			>Cloudflare's privacy policy</a
+		>
 		for how they handle it.
 	</p>
 

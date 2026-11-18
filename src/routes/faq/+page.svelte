@@ -38,5 +38,12 @@
 		<p>{f.a}</p>
 	{/each}
 
+	<p>
+		Season dates follow press reports of Blizzard's announced schedule, and later seasons are
+		estimates until confirmed. See the
+		<a href="https://overwatch.blizzard.com/en-us/news/" rel="noopener">official Overwatch news</a>
+		for confirmed dates.
+	</p>
+
 	<p><a href={resolve('/')}>Back to the live countdown</a></p>
 </DocPage>
