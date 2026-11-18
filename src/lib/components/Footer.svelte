@@ -9,7 +9,10 @@
 			title: 'HELP',
 			links: [
 				{ href: '/faq', label: 'FAQ' },
-				{ href: '/seasons', label: 'Season schedule' }
+				{ href: '/seasons', label: 'Season schedule' },
+				{ href: '/reset-time', label: 'Reset time by time zone' },
+				{ href: '/about', label: 'About' },
+				{ href: '/contact', label: 'Contact' }
 			]
 		},
 		{
@@ -26,6 +29,14 @@
 			<p class="disclaimer">
 				Not affiliated with Blizzard Entertainment. Overwatch is a trademark of Blizzard
 				Entertainment, Inc.
+			</p>
+			<p class="disclaimer">
+				Fan-made, open source on
+				<a class="inline" href="https://github.com/tostu/resetwatch" rel="noopener">GitHub</a>.
+				Confirmed dates:
+				<a class="inline" href="https://overwatch.blizzard.com/en-us/news/" rel="noopener"
+					>official Overwatch news</a
+				>.
 			</p>
 			<p class="copy">© {year} {SITE_NAME}</p>
 		</div>
@@ -103,6 +114,13 @@
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
+	}
+
+	a.inline {
+		display: inline;
+		min-height: 0;
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	a:hover {

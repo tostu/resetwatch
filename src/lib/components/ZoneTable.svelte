@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { resolve } from '$app/paths';
 	import { CONFIG, nextOccurrence, tzOffset } from '../resets';
 
 	let { now }: { now: number } = $props();
@@ -10,17 +11,19 @@
 		abbr: string;
 		/** 12-hour clock where that is the local habit. */
 		h12: boolean;
+		/** Slug of this zone's `/reset-time/[zone]` page, when it has one. */
+		slug?: string;
 	}
 
 	const ZONES: Zone[] = [
-		{ tz: 'America/Los_Angeles', city: 'Los Angeles', abbr: 'PT', h12: true },
-		{ tz: 'America/New_York', city: 'New York', abbr: 'ET', h12: true },
-		{ tz: 'America/Sao_Paulo', city: 'São Paulo', abbr: 'BRT', h12: false },
-		{ tz: 'Europe/London', city: 'London', abbr: 'UK', h12: false },
-		{ tz: 'Europe/Berlin', city: 'Berlin', abbr: 'CET', h12: false },
-		{ tz: 'Asia/Kolkata', city: 'Mumbai', abbr: 'IST', h12: false },
-		{ tz: 'Asia/Tokyo', city: 'Tokyo', abbr: 'JST', h12: false },
-		{ tz: 'Australia/Sydney', city: 'Sydney', abbr: 'AET', h12: false }
+		{ tz: 'America/Los_Angeles', city: 'Los Angeles', abbr: 'PT', h12: true, slug: 'pst' },
+		{ tz: 'America/New_York', city: 'New York', abbr: 'ET', h12: true, slug: 'est' },
+		{ tz: 'America/Sao_Paulo', city: 'São Paulo', abbr: 'BRT', h12: false, slug: 'brt' },
+		{ tz: 'Europe/London', city: 'London', abbr: 'UK', h12: false, slug: 'uk' },
+		{ tz: 'Europe/Berlin', city: 'Berlin', abbr: 'CET', h12: false, slug: 'cet' },
+		{ tz: 'Asia/Kolkata', city: 'Mumbai', abbr: 'IST', h12: false, slug: 'ist' },
+		{ tz: 'Asia/Tokyo', city: 'Tokyo', abbr: 'JST', h12: false, slug: 'jst' },
+		{ tz: 'Australia/Sydney', city: 'Sydney', abbr: 'AET', h12: false, slug: 'aest' }
 	];
 
 	// Set after hydration so the server-rendered table stays identical for every visitor.
@@ -84,7 +87,11 @@
 		{#each rows as r (r.tz)}
 			<tr class:you={r.you}>
 				<th scope="row">
-					<span class="city">{r.city}</span>
+					{#if r.slug}
+						<a class="city" href={resolve('/reset-time/[zone]', { zone: r.slug })}>{r.city}</a>
+					{:else}
+						<span class="city">{r.city}</span>
+					{/if}
 					<span class="label abbr">{r.abbr}</span>
 					{#if r.you}<span class="tag">YOU</span>{/if}
 				</th>
@@ -134,6 +141,13 @@
 	}
 	.city {
 		margin-right: 8px;
+	}
+	a.city {
+		color: inherit;
+		text-underline-offset: 3px;
+	}
+	a.city:hover {
+		text-decoration: underline;
 	}
 	.abbr {
 		font-size: 13px;

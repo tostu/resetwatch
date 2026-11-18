@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { clock } from '../../lib/now.svelte';
 	import { seasonAt, seasonByIndex, coarse, formatLocal } from '../../lib/resets';
 	import {
@@ -7,6 +8,7 @@
 		breadcrumbJsonLd,
 		jsonLdScript
 	} from '../../lib/seo';
+	import { seasonSlug } from '../../lib/season-pages';
 	import PageTitle from '#lib/components/PageTitle.svelte';
 	import TimeLeft from '#lib/components/TimeLeft.svelte';
 
@@ -88,7 +90,13 @@
 				{#each upcoming as s (s.index)}
 					<li class="row">
 						<span class="display num-ghost" aria-hidden="true">{s.number}</span>
-						<span class="label sname">{s.label}</span>
+						{#if seasonSlug(s)}
+							<a class="label sname" href={resolve('/seasons/[slug]', { slug: seasonSlug(s)! })}
+								>{s.label}</a
+							>
+						{:else}
+							<span class="label sname">{s.label}</span>
+						{/if}
 						<span class="starts">
 							<span class="label dimlabel">STARTS</span>
 							{formatLocal(s.start)}
@@ -103,7 +111,8 @@
 			seasons are estimates until Blizzard confirms them. Check the
 			<a href="https://overwatch.blizzard.com/en-us/news/" rel="noopener">official Overwatch news</a
 			>
-			for the final word.
+			for the final word. Back to the <a href={resolve('/')}>weekly reset countdown</a>, or read the
+			<a href={resolve('/faq')}>reset time FAQ</a>.
 		</p>
 	</div>
 </div>

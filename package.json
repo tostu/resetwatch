@@ -54,6 +54,7 @@
 	},
 	"dependencies": {
 		"@fontsource/barlow": "^5.3.0",
-		"@fontsource/barlow-condensed": "^5.3.0"
+		"@fontsource/barlow-condensed": "^5.3.0",
+		"bits-ui": "^2.21.0"
 	}
 }

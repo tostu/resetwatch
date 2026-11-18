@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DocPage from '#lib/components/DocPage.svelte';
+	import { CONTACT_EMAIL } from '../../lib/seo';
 </script>
 
 <svelte:head>
@@ -8,6 +9,12 @@
 </svelte:head>
 
 <DocPage title="PRIVACY" subtitle="WHAT WE COLLECT">
+	<h2>Who is responsible</h2>
+	<p>
+		Resetwatch is a private, non-commercial fan project. Contact for all privacy questions:
+		<a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.
+	</p>
+
 	<h2>Short version</h2>
 	<p>
 		Resetwatch has no accounts, no cookies, no analytics and no ads. The countdowns run entirely in
@@ -37,8 +44,9 @@
 	<h2>Your rights</h2>
 	<p>
 		Under the GDPR you can ask for access to, correction of, or deletion of personal data we hold
-		about you, and you can complain to a data protection authority. Since we store none beyond
-		short-lived server logs, there is usually nothing to hand over.
+		about you, and you can complain to a data protection authority. Send requests to
+		<a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>. Since we store none beyond short-lived
+		server logs, there is usually nothing to hand over.
 	</p>
 
 	<h2>Changes</h2>

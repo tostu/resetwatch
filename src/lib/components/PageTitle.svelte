@@ -9,10 +9,8 @@
 
 <header class="page-title">
 	<h1 class="display title" data-ghost={title}>
-		{#if srPrefix}<span class="sr-only">{srPrefix} </span>{/if}{title}{#if srSuffix}<span
-				class="sr-only"
-			>
-				{srSuffix}</span
+		{#if srPrefix}<span class="sr-only">{srPrefix}</span>{' '}{/if}{title}{#if srSuffix}{' '}<span
+				class="sr-only">{srSuffix}</span
 			>{/if}
 	</h1>
 	{#if subtitle}

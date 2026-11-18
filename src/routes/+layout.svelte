@@ -24,6 +24,8 @@
 	<!-- Real file in /static: Vite would inline a small imported SVG as a data: URI, which
 	     Google does not fetch for search-result favicons. -->
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+	<link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 	<link rel="canonical" href={canonical} />
 	<meta name="robots" content={robots} />
 	<meta property="og:type" content="website" />

@@ -1,12 +1,35 @@
+import eventsJson from './data/events.json';
+
 /** Shared SEO config + structured data. Change SITE_URL to the real production origin. */
 export const SITE_URL = 'https://resetwatch.tostu.net';
 export const SITE_NAME = 'Resetwatch';
+
+export const CONTACT_EMAIL = 'tostu@posteo.de';
+export const GITHUB_URL = 'https://github.com/tostu/resetwatch';
+export const SAME_AS = [GITHUB_URL];
+
+/**
+ * dateModified sources. Home/seasons content changes when the baked D1 events change
+ * (fetch-events only rewrites generatedAt on a real diff). Static pages carry the date of
+ * their last hand edit: bump when the copy changes.
+ */
+export const DATA_MODIFIED: string = eventsJson.generatedAt ?? '2026-11-18';
+export const ABOUT_MODIFIED = '2026-11-18';
+export const CONTACT_MODIFIED = '2026-11-18';
+
+export const ABOUT_TITLE = 'About Resetwatch: Fan-Made Overwatch Reset Tracker';
+export const ABOUT_DESCRIPTION =
+	'What Resetwatch is, where its Overwatch reset and season dates come from, and how it is run. A free, open-source, fan-made tool with no tracking.';
+
+export const CONTACT_TITLE = 'Contact Resetwatch';
+export const CONTACT_DESCRIPTION =
+	'Report a wrong Overwatch reset or season date, or get in touch with Resetwatch, by email.';
 
 export const OG_IMAGE = `${SITE_URL}/og.png`;
 export const OG_IMAGE_ALT =
 	'Resetwatch: Overwatch weekly reset countdown, every Tuesday 2 PM ET / 11 AM PT';
 
-export const HOME_TITLE = 'Overwatch Weekly Reset Countdown: Next Reset Time | Resetwatch';
+export const HOME_TITLE = 'Overwatch Weekly Reset Countdown & Time | Resetwatch';
 export const HOME_DESCRIPTION =
 	'When is the next Overwatch weekly reset? Live countdown to the Tuesday reset (2 PM ET / 11 AM PT), event end and season end, shown in your local time.';
 
@@ -62,6 +85,7 @@ export function websiteJsonLd() {
 				name: SITE_NAME,
 				description: HOME_DESCRIPTION,
 				inLanguage: 'en',
+				dateModified: DATA_MODIFIED,
 				publisher: { '@id': `${SITE_URL}/#org` }
 			},
 			{
@@ -70,7 +94,16 @@ export function websiteJsonLd() {
 				name: SITE_NAME,
 				url: `${SITE_URL}/`,
 				// Square logo: Google rejects wide images (og.png is 1200x630) for Organization logos.
-				logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.svg`, width: 512, height: 512 }
+				logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png`, width: 512, height: 512 },
+				email: CONTACT_EMAIL,
+				contactPoint: {
+					'@type': 'ContactPoint',
+					contactType: 'customer support',
+					email: CONTACT_EMAIL,
+					url: `${SITE_URL}/contact`,
+					availableLanguage: ['en', 'de']
+				},
+				sameAs: SAME_AS
 			},
 			{
 				'@type': 'WebApplication',
@@ -81,10 +114,44 @@ export function websiteJsonLd() {
 				operatingSystem: 'Any (web browser)',
 				description: HOME_DESCRIPTION,
 				isAccessibleForFree: true,
+				dateModified: DATA_MODIFIED,
 				offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-				about: { '@type': 'VideoGame', name: 'Overwatch' }
+				about: { '@type': 'VideoGame', name: 'Overwatch' },
+				author: { '@id': `${SITE_URL}/#org` },
+				sameAs: SAME_AS
 			}
 		]
+	};
+}
+
+export function aboutJsonLd() {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'AboutPage',
+		'@id': `${SITE_URL}/about#page`,
+		url: absolute('/about'),
+		name: ABOUT_TITLE,
+		description: ABOUT_DESCRIPTION,
+		inLanguage: 'en',
+		dateModified: ABOUT_MODIFIED,
+		isPartOf: { '@id': `${SITE_URL}/#website` },
+		about: { '@id': `${SITE_URL}/#org` },
+		mainEntity: { '@id': `${SITE_URL}/#org` }
+	};
+}
+
+export function contactJsonLd() {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'ContactPage',
+		'@id': `${SITE_URL}/contact#page`,
+		url: absolute('/contact'),
+		name: CONTACT_TITLE,
+		description: CONTACT_DESCRIPTION,
+		inLanguage: 'en',
+		dateModified: CONTACT_MODIFIED,
+		isPartOf: { '@id': `${SITE_URL}/#website` },
+		about: { '@id': `${SITE_URL}/#org` }
 	};
 }
 
