@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { SITE_NAME } from '../seo';
+	import { openConsentSettings } from '../consent';
 
 	const year = new Date().getFullYear();
 
@@ -17,7 +18,10 @@
 		},
 		{
 			title: 'LEGAL',
-			links: [{ href: '/privacy', label: 'Privacy policy' }]
+			links: [
+				{ href: '/privacy', label: 'Privacy policy / Datenschutz' },
+				{ href: '/impressum', label: 'Impressum' }
+			]
 		}
 	] as const;
 </script>
@@ -53,6 +57,13 @@
 					{#each g.links as l (l.href)}
 						<li><a href={resolve(l.href)}>{l.label}</a></li>
 					{/each}
+					{#if g.title === 'LEGAL'}
+						<li>
+							<button type="button" class="linkbtn" onclick={() => openConsentSettings()}>
+								Privacy settings / Datenschutz-Einstellungen
+							</button>
+						</li>
+					{/if}
 				</ul>
 			</nav>
 		{/each}
@@ -119,6 +130,30 @@
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
+	}
+
+	.linkbtn {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: var(--text);
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.linkbtn:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	@media (min-width: 720px) {
+		.linkbtn {
+			min-height: 32px;
+		}
 	}
 
 	a.inline {

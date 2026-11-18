@@ -3,6 +3,7 @@
 	import TopBar from '#lib/components/TopBar.svelte';
 	import KeyHints from '#lib/components/KeyHints.svelte';
 	import Footer from '#lib/components/Footer.svelte';
+	import CookieNotice from '#lib/components/CookieNotice.svelte';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { displayZone } from '../lib/timezone.svelte';
@@ -17,7 +18,7 @@
 	const canonical = $derived(absolute(page.url.pathname === '/' ? '/' : page.url.pathname));
 
 	// Pages that should stay out of the index. One robots tag per page, set here only.
-	const NOINDEX_PATHS = ['/privacy'];
+	const NOINDEX_PATHS = ['/privacy', '/impressum'];
 	const robots = $derived(
 		NOINDEX_PATHS.includes(page.url.pathname)
 			? 'noindex, follow'
@@ -62,6 +63,8 @@
 <Footer />
 
 <KeyHints />
+
+<CookieNotice />
 
 <style>
 	.backdrop {

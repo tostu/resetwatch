@@ -45,10 +45,14 @@
 		Found a wrong date? <a href={resolve('/contact')}>Tell us</a> and it gets fixed.
 	</p>
 
-	<h2>No tracking</h2>
+	<h2>Privacy</h2>
 	<p>
-		No accounts, no cookies, no analytics, no ads. The countdowns run in your browser. Details are
-		in the <a href={resolve('/privacy')}>privacy policy</a>.
+		No accounts, no tracking cookies, no ads. Anonymous page view statistics (Cloudflare Web
+		Analytics) only run if you opt in, and you can withdraw that any time in the footer. The
+		countdowns run in your browser. The host, Cloudflare, may set security-only cookies and
+		processes server logs to keep the site safe. Details are in the <a href={resolve('/privacy')}
+			>privacy policy</a
+		>.
 	</p>
 
 	<h2>Open source</h2>

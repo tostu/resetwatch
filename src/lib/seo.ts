@@ -19,7 +19,7 @@ export const CONTACT_MODIFIED = '2026-11-18';
 
 export const ABOUT_TITLE = 'About Resetwatch: Fan-Made Overwatch Reset Tracker';
 export const ABOUT_DESCRIPTION =
-	'What Resetwatch is, where its Overwatch reset and season dates come from, and how it is run. A free, open-source, fan-made tool with no tracking.';
+	'What Resetwatch is, where its Overwatch reset and season dates come from, and how it is run. A free, open-source, fan-made tool with no ads and opt-in analytics only.';
 
 export const CONTACT_TITLE = 'Contact Resetwatch';
 export const CONTACT_DESCRIPTION =
