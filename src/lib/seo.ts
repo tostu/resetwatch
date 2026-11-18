@@ -69,7 +69,8 @@ export function websiteJsonLd() {
 				'@id': `${SITE_URL}/#org`,
 				name: SITE_NAME,
 				url: `${SITE_URL}/`,
-				logo: OG_IMAGE
+				// Square logo: Google rejects wide images (og.png is 1200x630) for Organization logos.
+				logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.svg`, width: 512, height: 512 }
 			},
 			{
 				'@type': 'WebApplication',

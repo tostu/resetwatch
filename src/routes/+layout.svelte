@@ -1,6 +1,5 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '#lib/assets/favicon.svg';
 	import TopBar from '#lib/components/TopBar.svelte';
 	import KeyHints from '#lib/components/KeyHints.svelte';
 	import Footer from '#lib/components/Footer.svelte';
@@ -22,7 +21,9 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<!-- Real file in /static: Vite would inline a small imported SVG as a data: URI, which
+	     Google does not fetch for search-result favicons. -->
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
 	<link rel="canonical" href={canonical} />
 	<meta name="robots" content={robots} />
 	<meta property="og:type" content="website" />
