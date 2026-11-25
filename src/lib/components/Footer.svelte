@@ -56,7 +56,7 @@
 					aria-label="Buy me a coffee"
 				>
 					<!-- Static files go through asset(), not resolve(), which only takes routes. -->
-					<img src={asset('buymeacoffee.svg')} alt="Buy me a coffee" height="40" />
+					<img src={asset('buymeacoffee.svg')} alt="Buy me a coffee" width="156" height="40" />
 				</a>
 				<a class="btn gh" href="https://github.com/tostu/resetwatch" rel="noopener">
 					<svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true" fill="currentColor">

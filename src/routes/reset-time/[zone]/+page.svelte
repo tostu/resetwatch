@@ -74,8 +74,7 @@
 		glyph="clock"
 		eyebrow="WEEKLY RESET TIME"
 		title={z.short.toUpperCase()}
-		srPrefix="Overwatch reset time in"
-		srSuffix="({z.name})"
+		srPrefix="Overwatch weekly reset time in"
 		ms={remaining}
 		msLabel="NEXT WEEKLY RESET IN"
 	/>

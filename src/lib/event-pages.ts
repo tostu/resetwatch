@@ -68,10 +68,17 @@ export function endsWithSeason(p: EventPage): boolean {
 
 const ET = 'America/New_York';
 
-/** `Overwatch Taking Reign: End Date & Countdown | Resetwatch` */
-export function eventTitle(p: EventPage): string {
-	return `Overwatch ${p.name}: End Date & Countdown | Resetwatch`;
+/**
+ * `Overwatch Taking Reign: End Date & Countdown | Resetwatch`; upcoming events lead with the
+ * start date, since that is what people search for before it begins.
+ */
+export function eventTitle(p: EventPage, now: number): string {
+	const what = eventPhase(p, now) === 'upcoming' ? 'Start Date' : 'End Date';
+	return `Overwatch ${p.name}: ${what} & Countdown | Resetwatch`;
 }
+
+/** Summaries come without a final stop; meta descriptions should end like a sentence. */
+const sentence = (s: string) => (/[.!?]$/.test(s.trim()) ? s.trim() : `${s.trim()}.`);
 
 export function eventDescription(p: EventPage): string {
 	const end = longDate(p.endsAt, ET);
@@ -79,7 +86,7 @@ export function eventDescription(p: EventPage): string {
 		p.startsAt !== undefined ? `runs from ${longDate(p.startsAt, ET)} to ${end}` : `ends ${end}`;
 	const base = `Overwatch ${p.name} ${range}. Live countdown in your local time`;
 	return p.details?.summary
-		? `${base}. ${p.details.summary}`
+		? `${base}. ${sentence(p.details.summary)}`
 		: `${base}, with a link to the official post.`;
 }
 

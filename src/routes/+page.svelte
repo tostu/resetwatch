@@ -79,7 +79,8 @@
 			weekday: 'short',
 			month: 'short',
 			day: 'numeric',
-			timeZone: displayZone.zone || undefined
+			// UTC until hydration: the prerendered HTML must not depend on the build machine's zone.
+			timeZone: displayZone.zone || 'UTC'
 		}).format(ts);
 </script>
 
@@ -103,10 +104,10 @@
 	<section class="hero" aria-labelledby="weekly" style="--pos: {markerPos}">
 		<div class="hero-top">
 			<div class="hero-main">
-				<h1 id="weekly" class="label eyebrow">
-					<span class="sr-only">Overwatch</span> Weekly reset in
-					<span class="sr-only">– live countdown</span>
+				<h1 id="weekly" class="sr-only">
+					Overwatch Weekly Reset Countdown {season.year}: Season {season.number}
 				</h1>
+				<p class="label eyebrow" aria-hidden="true">Weekly reset in</p>
 				<div
 					class="num big"
 					class:pending={!clock.ready}
@@ -166,6 +167,14 @@
 			<a class="btn-primary" href="{resolve('/seasons')}#subscribe">Subscribe to season dates</a>
 			<TzSwitch />
 		</div>
+
+		<p class="intro">
+			The Overwatch weekly reset is every Tuesday at 2 PM ET / 11 AM PT, which is 19:00 UTC in
+			winter and 18:00 UTC in summer. Above are live countdowns to the reset and the season end,
+			below the current events, all in your local time. See the
+			<a href={resolve('/seasons')}>full season schedule</a> for week-by-week progress, or add the
+			season launches to your <a href={resolve('/seasons.ics')}>calendar (.ics)</a>.
+		</p>
 	</section>
 
 	{#if events.length}
@@ -454,6 +463,17 @@
 	}
 	.hero > .hero-actions {
 		margin-top: 20px;
+	}
+	.intro {
+		margin: 28px 0 0;
+		font-size: 16px;
+		line-height: 1.6;
+		color: var(--text-dim);
+	}
+	.intro a {
+		color: var(--text);
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	/* ---------- sections ---------- */

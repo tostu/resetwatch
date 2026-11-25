@@ -13,7 +13,11 @@ export const SAME_AS = [GITHUB_URL];
  * (fetch-events only rewrites generatedAt on a real diff). Static pages carry the date of
  * their last hand edit: bump when the copy changes.
  */
-export const DATA_MODIFIED: string = eventsJson.generatedAt ?? '2026-11-18';
+const FALLBACK_MODIFIED = '2026-11-18';
+// A hand-edited or placeholder generatedAt (e.g. `local-preview`) must never reach the markup.
+export const DATA_MODIFIED: string = Number.isNaN(Date.parse(eventsJson.generatedAt ?? ''))
+	? FALLBACK_MODIFIED
+	: eventsJson.generatedAt!;
 export const ABOUT_MODIFIED = '2026-11-18';
 export const CONTACT_MODIFIED = '2026-11-18';
 

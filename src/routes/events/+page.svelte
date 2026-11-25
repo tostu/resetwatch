@@ -31,11 +31,16 @@
 		all.filter((e) => eventPhase(e, clock.now) === 'ended').sort((a, b) => b.endsAt - a.endsAt)
 	);
 
+	/**
+	 * Ended events stay in the prerendered HTML (and the sitemap), so crawlers can still reach
+	 * their pages and nothing needs a redeploy when an event ends. Visitors see them only until
+	 * the page has hydrated: once the clock is live, the list shows what is on now and next.
+	 */
 	const groups = $derived(
 		[
 			{ id: 'live', title: 'Live now', items: live, verb: 'Ends' },
 			{ id: 'upcoming', title: 'Upcoming', items: upcoming, verb: 'Starts' },
-			{ id: 'ended', title: 'Recently ended', items: ended, verb: 'Ended' }
+			{ id: 'ended', title: 'Recently ended', items: clock.ready ? [] : ended, verb: 'Ended' }
 		].filter((g) => g.items.length)
 	);
 

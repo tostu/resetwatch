@@ -368,23 +368,37 @@ export function urgency(ms: number): Urgency {
 }
 
 /**
- * Time in the viewer's zone, e.g. `Tue, Nov 24, 20:00 CET`. Pass `tz` (IANA) to pin the zone;
- * without it the runtime's zone is used (UTC during prerender, so the label stays explicit
- * until the client swaps in local time).
+ * English date/time labels for the visitor's browser. The site copy is English, so a German or
+ * French browser locale must not produce `Di., 1. Dez.` next to English text: English
+ * browsers keep their own variant (en-US 12h, en-GB 24h), everyone else gets en-GB (24h).
+ */
+function clientLocale(): string {
+	const lang = typeof navigator === 'undefined' ? '' : navigator.language;
+	return /^en\b/i.test(lang) ? lang : 'en-GB';
+}
+
+/**
+ * Time in the viewer's zone, e.g. `Tue, Nov 24, 20:00 CET`. Pass `tz` (IANA) to pin the zone.
+ * Without `tz` (prerender, and the first client render before hydration) the label is always
+ * `en-US` in UTC, never the build machine's or server's locale and zone, so the HTML is
+ * identical for every build and visitor; the client swaps in its own zone and locale after.
  */
 export function formatLocal(ts: number, locale?: string, tz?: string): string {
+	const pinned = !tz && !locale;
 	const opts: Intl.DateTimeFormatOptions = {
 		weekday: 'short',
 		month: 'short',
 		day: 'numeric',
 		hour: '2-digit',
 		minute: '2-digit',
-		timeZone: tz || undefined,
+		timeZone: tz || 'UTC',
 		timeZoneName: 'short'
 	};
+	if (pinned) return new Intl.DateTimeFormat('en-US', opts).format(new Date(ts));
+	locale ??= clientLocale();
 	const text = new Intl.DateTimeFormat(locale, opts).format(new Date(ts));
 	// en-US prints `GMT+1`; en-GB knows `CET`/`BST`. Prefer the readable abbreviation.
-	if (!locale && /GMT[+-]/.test(text)) {
+	if (/GMT[+-]/.test(text)) {
 		const alt = new Intl.DateTimeFormat('en-GB', opts).format(new Date(ts));
 		if (!/GMT[+-]/.test(alt)) return alt;
 	}

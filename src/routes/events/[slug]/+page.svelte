@@ -27,9 +27,9 @@
 	$effect(() => clock.start());
 
 	const p = $derived(eventPage(data.slug)!);
-	const title = $derived(eventTitle(p));
-	const description = $derived(eventDescription(p));
 	const phase = $derived(eventPhase(p, clock.now));
+	const title = $derived(eventTitle(p, clock.now));
+	const description = $derived(eventDescription(p));
 	const target = $derived(phase === 'upcoming' ? p.startsAt! : p.endsAt);
 	const remaining = $derived(target - clock.now);
 	const days = $derived(durationDays(p));
@@ -106,7 +106,7 @@
 		title={p.name.toUpperCase()}
 		subtitle={phase === 'ended' ? 'EVENT ENDED' : undefined}
 		srPrefix="Overwatch"
-		srSuffix="End Date &amp; Countdown"
+		srSuffix={phase === 'upcoming' ? 'Start Date & Countdown' : 'End Date & Countdown'}
 		ms={phase === 'ended' ? undefined : remaining}
 		msLabel={phase === 'upcoming' ? 'STARTS IN' : 'ENDS IN'}
 	/>
