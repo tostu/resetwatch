@@ -6,7 +6,8 @@
   Cache-Control: public, max-age=300
 
 /seasons.ics
-  Cache-Control: public, max-age=3600
+  Content-Type: text/calendar; charset=utf-8
+  Cache-Control: public, max-age=900
 
 /og.png
   Cache-Control: public, max-age=86400
