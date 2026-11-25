@@ -1,6 +1,7 @@
 import { absolute } from '../../lib/seo';
 import { SEASON_PAGES } from '../../lib/season-pages';
 import { ZONE_PAGES } from '../../lib/zones';
+import { eventPages } from '../../lib/event-pages';
 
 export const prerender = true;
 
@@ -8,6 +9,8 @@ const PATHS = [
 	'/',
 	'/seasons',
 	...SEASON_PAGES.map((s) => `/seasons/${s.slug}`),
+	'/events',
+	...eventPages().map((e) => `/events/${e.slug}`),
 	'/reset-time',
 	...ZONE_PAGES.map((z) => `/reset-time/${z.slug}`),
 	'/faq',
