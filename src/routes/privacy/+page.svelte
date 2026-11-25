@@ -12,7 +12,7 @@
 </svelte:head>
 
 <DocPage title="DATENSCHUTZ" subtitle="PRIVACY POLICY">
-	<p><strong>Stand: 2026-11-18</strong> · <a href="#english">English version below</a></p>
+	<p><strong>Stand: 2026-11-25</strong> · <a href="#english">English version below</a></p>
 
 	<h2 id="deutsch">Datenschutzerklärung (Deutsch)</h2>
 
@@ -28,7 +28,8 @@
 		Resetwatch hat keine Benutzerkonten und keine Werbung. Die Countdowns laufen vollständig in
 		Ihrem Browser, anhand der Uhr und Zeitzone Ihres Geräts. Beim Aufruf der Seite verarbeitet der
 		Hosting-Anbieter Cloudflare technisch notwendige Daten (Server-Logs). Eine anonyme
-		Reichweitenmessung (Cloudflare Web Analytics) läuft nur, wenn Sie im Banner zustimmen. Eine
+		Reichweitenmessung (Cloudflare Web Analytics) und ein Feedback-Popup (Tally) laufen nur, wenn
+		Sie im Banner zustimmen. Eine
 		lokale Einstellung (Zeitzone) wird nur gespeichert, wenn Sie sie selbst ändern.
 	</p>
 
@@ -108,6 +109,25 @@
 		Verarbeitung bleibt unberührt.
 	</p>
 
+	<h3>6a. Feedback-Popup (Tally, nur mit Einwilligung)</h3>
+	<p>
+		Wenn Sie im Banner die Kategorie „Feedback“ erlauben („Alle erlauben“), laden wir das Skript von
+		Tally (<code>tally.so</code>). Es zeigt beim Verlassen der Seite einmalig ein kleines Popup mit
+		einem Feedback-Formular. Beim Laden des Skripts erhält Tally Ihre IP-Adresse und technische
+		Browserangaben. Die Antworten im Formular werden nur übertragen, wenn Sie das Formular selbst
+		abschicken; sie können freiwillig auch ohne E-Mail-Adresse gegeben werden. Damit das Popup nicht
+		erneut erscheint, speichert Tally lokal in Ihrem Browser, dass Sie es gesehen oder beantwortet
+		haben. Anbieter ist Tally BV, Belgien (EU).
+	</p>
+	<p>
+		Ohne Ihre Zustimmung wird das Skript nicht geladen. Rechtsgrundlage ist Ihre Einwilligung, Art.
+		6 Abs. 1 lit. a DSGVO und § 25 Abs. 1 TDDDG. Sie ist freiwillig und kann jederzeit mit Wirkung
+		für die Zukunft über „Datenschutz-Einstellungen“ im Footer widerrufen werden. Mehr dazu in der
+		<a href="https://tally.so/help/privacy-policy" rel="noopener noreferrer"
+			>Datenschutzerklärung von Tally</a
+		>.
+	</p>
+
 	<h3>7. Schriftarten</h3>
 	<p>
 		Schriftarten werden von dieser Seite selbst ausgeliefert. Ihr Browser kontaktiert weder Google
@@ -139,7 +159,7 @@
 		<li>Löschung (Art. 17)</li>
 		<li>Einschränkung der Verarbeitung (Art. 18)</li>
 		<li>Datenübertragbarkeit (Art. 20)</li>
-		<li>Widerruf einer Einwilligung (Art. 7 Abs. 3), siehe Abschnitt 6</li>
+		<li>Widerruf einer Einwilligung (Art. 7 Abs. 3), siehe Abschnitte 6 und 6a</li>
 		<li>
 			Widerspruch (Art. 21): Soweit wir Daten auf Grundlage berechtigter Interessen (Art. 6 Abs. 1
 			lit. f DSGVO) verarbeiten, können Sie aus Gründen, die sich aus Ihrer besonderen Situation
@@ -170,7 +190,7 @@
 	<h3>12. Änderungen</h3>
 	<p>
 		Wenn sich die Datenverarbeitung ändert, wird diese Erklärung vorher angepasst. Stand:
-		2026-11-18.
+		2026-11-25.
 	</p>
 
 	<hr />
@@ -189,7 +209,7 @@
 		Resetwatch has no accounts and no ads. The countdowns run entirely in your browser, using your
 		device's clock and time zone. When you open the site, the hosting provider Cloudflare processes
 		technically necessary data (server logs). Anonymous audience measurement (Cloudflare Web
-		Analytics) only runs if you agree in the banner. A local setting (time zone) is only stored if
+		Analytics) and a feedback popup (Tally) only run if you agree in the banner. A local setting (time zone) is only stored if
 		you change it yourself.
 	</p>
 
@@ -264,6 +284,24 @@
 		lawfulness of processing before withdrawal is not affected.
 	</p>
 
+	<h3>6a. Feedback popup (Tally, consent only)</h3>
+	<p>
+		If you allow the "Feedback" category in the banner ("Allow all"), we load the script from Tally
+		(<code>tally.so</code>). When you are about to leave the page, it shows a small popup with a
+		feedback form once. Loading the script gives Tally your IP address and technical browser
+		details. Your answers in the form are only transmitted if you submit the form yourself, and you
+		may answer without giving an email address. So the popup does not reappear, Tally stores locally
+		in your browser that you saw or answered it. The provider is Tally BV, Belgium (EU).
+	</p>
+	<p>
+		Without your consent the script is not loaded. The legal basis is your consent, Art. 6(1)(a)
+		GDPR and § 25(1) TDDDG. It is voluntary and can be withdrawn at any time with effect for the
+		future via "Privacy settings" in the footer. See
+		<a href="https://tally.so/help/privacy-policy" rel="noopener noreferrer"
+			>Tally's privacy policy</a
+		>.
+	</p>
+
 	<h3>7. Fonts</h3>
 	<p>
 		Fonts are served from this site. Your browser does not contact Google or any other font
@@ -293,7 +331,7 @@
 		<li>erasure (Art. 17)</li>
 		<li>restriction of processing (Art. 18)</li>
 		<li>data portability (Art. 20)</li>
-		<li>withdraw consent (Art. 7(3)), see section 6</li>
+		<li>withdraw consent (Art. 7(3)), see sections 6 and 6a</li>
 		<li>
 			object (Art. 21): where we process data based on legitimate interests (Art. 6(1)(f) GDPR), you
 			may object at any time on grounds relating to your particular situation.
@@ -319,5 +357,5 @@
 	</p>
 
 	<h3>12. Changes</h3>
-	<p>If data processing changes, this page will be updated first. Last updated: 2026-11-18.</p>
+	<p>If data processing changes, this page will be updated first. Last updated: 2026-11-25.</p>
 </DocPage>

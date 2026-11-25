@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { analyticsLoaded, loadAnalytics } from '../consent';
+	import { analyticsLoaded, feedbackLoaded, loadAnalytics, loadFeedback } from '../consent';
 
-	// Real opt-in: Cloudflare Web Analytics only loads after "analytics" is accepted. Declining
-	// is as easy as accepting, and the footer link reopens the preferences to withdraw consent.
+	// Real opt-in: Cloudflare Web Analytics and the Tally feedback popup only load after their
+	// category is accepted. Declining is as easy as accepting, and the footer link reopens the
+	// preferences to withdraw consent.
+	function applyConsent(CookieConsent: typeof import('vanilla-cookieconsent')) {
+		if (CookieConsent.acceptedCategory('analytics')) loadAnalytics();
+		if (CookieConsent.acceptedCategory('feedback')) loadFeedback();
+	}
 	onMount(() => {
 		let cancelled = false;
 
@@ -15,17 +20,17 @@
 			const de = navigator.language?.toLowerCase().startsWith('de');
 
 			await CookieConsent.run({
-				revision: 2,
-				onFirstConsent: () => {
-					if (CookieConsent.acceptedCategory('analytics')) loadAnalytics();
-				},
-				onConsent: () => {
-					if (CookieConsent.acceptedCategory('analytics')) loadAnalytics();
-				},
+				revision: 3,
+				onFirstConsent: () => applyConsent(CookieConsent),
+				onConsent: () => applyConsent(CookieConsent),
 				onChange: () => {
-					if (CookieConsent.acceptedCategory('analytics')) loadAnalytics();
-					// Withdrawn: reload so the already-injected beacon stops running.
-					else if (analyticsLoaded()) location.reload();
+					applyConsent(CookieConsent);
+					// Withdrawn: reload so the already-injected scripts stop running.
+					if (
+						(analyticsLoaded() && !CookieConsent.acceptedCategory('analytics')) ||
+						(feedbackLoaded() && !CookieConsent.acceptedCategory('feedback'))
+					)
+						location.reload();
 				},
 				cookie: {
 					name: 'cc_cookie',
@@ -42,7 +47,8 @@
 				},
 				categories: {
 					necessary: { enabled: true, readOnly: true },
-					analytics: { enabled: false }
+					analytics: { enabled: false },
+					feedback: { enabled: false }
 				},
 				language: {
 					default: de ? 'de' : 'en',
@@ -52,14 +58,14 @@
 							consentModal: {
 								title: 'Privacy settings',
 								description:
-									'Resetwatch can use Cloudflare Web Analytics to count page views, without cookies and without advertising. It only runs if you allow it. Necessary storage (security, your choice here, time zone) is always on. Details in the <a href="/privacy">privacy policy</a> and <a href="/impressum">legal notice</a>.',
-								acceptAllBtn: 'Allow analytics',
+									'Resetwatch can use Cloudflare Web Analytics to count page views and a Tally popup to ask for feedback when you leave. No advertising. Both only run if you allow them. Necessary storage (security, your choice here, time zone) is always on. Details in the <a href="/privacy">privacy policy</a> and <a href="/impressum">legal notice</a>.',
+								acceptAllBtn: 'Allow all',
 								acceptNecessaryBtn: 'Necessary only',
 								showPreferencesBtn: 'Settings'
 							},
 							preferencesModal: {
 								title: 'Privacy settings',
-								acceptAllBtn: 'Allow analytics',
+								acceptAllBtn: 'Allow all',
 								acceptNecessaryBtn: 'Necessary only',
 								savePreferencesBtn: 'Save settings',
 								closeIconLabel: 'Close',
@@ -75,6 +81,12 @@
 										description:
 											'Anonymous page view and performance statistics. No cookies, no cross-site tracking, no profiles. Data goes to Cloudflare (USA). You can withdraw consent at any time via "Privacy settings" in the footer.',
 										linkedCategory: 'analytics'
+									},
+									{
+										title: 'Feedback (Tally)',
+										description:
+											'A small popup asks for feedback when you are about to leave. Loading it contacts Tally (Belgium), which receives your IP address; your answers are only sent if you submit the form. It remembers locally that you saw or answered it. You can withdraw consent at any time via "Privacy settings" in the footer.',
+										linkedCategory: 'feedback'
 									}
 								]
 							}
@@ -83,14 +95,14 @@
 							consentModal: {
 								title: 'Datenschutz-Einstellungen',
 								description:
-									'Resetwatch kann Cloudflare Web Analytics nutzen, um Seitenaufrufe zu zählen, ohne Cookies und ohne Werbung. Das läuft nur, wenn du zustimmst. Notwendige Speicherung (Sicherheit, deine Auswahl hier, Zeitzone) ist immer aktiv. Details in der <a href="/privacy">Datenschutzerklärung</a> und im <a href="/impressum">Impressum</a>.',
-								acceptAllBtn: 'Analyse erlauben',
+									'Resetwatch kann Cloudflare Web Analytics nutzen, um Seitenaufrufe zu zählen, und ein Tally-Popup, um beim Verlassen der Seite nach Feedback zu fragen. Keine Werbung. Beides läuft nur, wenn du zustimmst. Notwendige Speicherung (Sicherheit, deine Auswahl hier, Zeitzone) ist immer aktiv. Details in der <a href="/privacy">Datenschutzerklärung</a> und im <a href="/impressum">Impressum</a>.',
+								acceptAllBtn: 'Alle erlauben',
 								acceptNecessaryBtn: 'Nur notwendige',
 								showPreferencesBtn: 'Einstellungen'
 							},
 							preferencesModal: {
 								title: 'Datenschutz-Einstellungen',
-								acceptAllBtn: 'Analyse erlauben',
+								acceptAllBtn: 'Alle erlauben',
 								acceptNecessaryBtn: 'Nur notwendige',
 								savePreferencesBtn: 'Einstellungen speichern',
 								closeIconLabel: 'Schließen',
@@ -106,6 +118,12 @@
 										description:
 											'Anonyme Statistik zu Seitenaufrufen und Ladeleistung. Keine Cookies, kein seitenübergreifendes Tracking, keine Profile. Die Daten gehen an Cloudflare (USA). Du kannst deine Einwilligung jederzeit über „Datenschutz-Einstellungen“ im Footer widerrufen.',
 										linkedCategory: 'analytics'
+									},
+									{
+										title: 'Feedback (Tally)',
+										description:
+											'Ein kleines Popup fragt nach Feedback, wenn du die Seite verlassen willst. Beim Laden wird Tally (Belgien) kontaktiert und erhält deine IP-Adresse; deine Antworten werden nur gesendet, wenn du das Formular abschickst. Lokal wird gemerkt, dass du es gesehen oder beantwortet hast. Du kannst deine Einwilligung jederzeit über „Datenschutz-Einstellungen“ im Footer widerrufen.',
+										linkedCategory: 'feedback'
 									}
 								]
 							}
