@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
 	activeEvents,
 	coarse,
+	detailsOf,
+	eventWindow,
+	seasonSubtitle,
 	formatCountdown,
 	mergeSeasonStarts,
 	nextOccurrence,
@@ -82,6 +85,54 @@ describe('snapToReset', () => {
 	});
 });
 
+describe('eventWindow', () => {
+	it('multi-week events snap to the weekly reset (to Dec 7 = Tue Dec 8 reset)', () => {
+		expect(eventWindow('2026-11-03T18:00:00Z', '2026-12-07T18:00:00Z')).toEqual({
+			startsAt: Date.UTC(2026, 10, 3, 19),
+			endsAt: Date.UTC(2026, 11, 8, 19)
+		});
+	});
+	it('short events keep their own days at reset time (weekend Loot Hunt ends Monday)', () => {
+		expect(eventWindow('2026-11-20T18:00:00Z', '2026-11-23T18:00:00Z')).toEqual({
+			startsAt: Date.UTC(2026, 10, 20, 19),
+			endsAt: Date.UTC(2026, 10, 23, 19)
+		});
+		expect(eventWindow('2026-12-03', '2026-12-07').endsAt).toBe(Date.UTC(2026, 11, 7, 19));
+	});
+	it('no start: treated as long', () => {
+		expect(eventWindow(null, '2026-11-24T00:00:00Z')).toEqual({
+			startsAt: undefined,
+			endsAt: Date.UTC(2026, 10, 24, 19)
+		});
+	});
+});
+
+describe('detailsOf', () => {
+	it('undefined without any detail, mapped otherwise', () => {
+		expect(detailsOf({ kind: 'event', name: 'x' })).toBeUndefined();
+		expect(
+			detailsOf({
+				kind: 'event',
+				facts: [{ label: 'Reward tiers', value: '24' }],
+				source_url: 'https://overwatch.blizzard.com/en-us/news/1/x'
+			})
+		).toEqual({
+			summary: undefined,
+			facts: [{ label: 'Reward tiers', value: '24' }],
+			sourceUrl: 'https://overwatch.blizzard.com/en-us/news/1/x',
+			sourceTitle: undefined
+		});
+	});
+});
+
+describe('seasonSubtitle', () => {
+	it('strips the season prefix', () => {
+		expect(seasonSubtitle('Season 5: A Grim Doctrine')).toBe('A Grim Doctrine');
+		expect(seasonSubtitle('Season 6')).toBeUndefined();
+		expect(seasonSubtitle(null)).toBeUndefined();
+	});
+});
+
 describe('mergeSeasonStarts', () => {
 	const fallback = ['2026-10-06', '2026-12-08'];
 	const oct6 = Date.UTC(2026, 9, 6, 18);
@@ -100,6 +151,15 @@ describe('mergeSeasonStarts', () => {
 			]
 		});
 		expect(out).toEqual([oct6, dec8, Date.UTC(2027, 1, 9, 19)]);
+	});
+	it('a nearby D1 start corrects the fallback; an implausible one is ignored', () => {
+		const out = mergeSeasonStarts(fallback, {
+			events: [
+				{ kind: 'season_start', name: 'S6 moved', starts_at: '2026-12-15' },
+				{ kind: 'season_start', name: 'bogus', starts_at: '2026-11-03' }
+			]
+		});
+		expect(out).toEqual([oct6, Date.UTC(2026, 11, 15, 19)]);
 	});
 });
 
@@ -160,12 +220,12 @@ describe('activeEvents', () => {
 		]);
 	});
 	it('caps the number of events', () => {
-		const events = Array.from({ length: 6 }, (_, i) => ({
+		const events = Array.from({ length: 8 }, (_, i) => ({
 			kind: 'event',
 			name: `E${i}`,
 			ends_at: `2026-12-0${i + 1}T00:00:00Z`
 		}));
-		expect(activeEvents(fb, { events }, now)).toHaveLength(4);
+		expect(activeEvents(fb, { events }, now)).toHaveLength(6);
 		expect(activeEvents(fb, { events }, now, 2)).toHaveLength(2);
 	});
 });

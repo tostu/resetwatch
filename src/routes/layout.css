@@ -42,12 +42,18 @@
 	/* Text */
 	--text: #ffffff;
 	--text-dim: #b4bdcf;
-	--text-faint: #7c879d;
+	--text-faint: #95a0b6;
 
 	--cyan: #5cc8ff;
 	--cyan-ink: #06223f;
 
 	--ow-logo-orange: #fc9d1f;
+
+	/* One surface step, one hairline, one accent. Everything sits on these. */
+	--surface: #141b2e;
+	--surface-2: #1c2440;
+	--line: rgb(255 255 255 / 0.09);
+	--accent: var(--orange);
 
 	/* Fonts */
 	--font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
@@ -56,6 +62,26 @@
 	/* Layout */
 	--bar-h: 68px;
 	--mobile-bar-h: 64px;
+	/* How far a page banner pulls up under the top bar: main padding + page padding. */
+	--hero-pull: 76px;
+}
+
+@media (max-width: 719px) {
+	:root {
+		--hero-pull: 80px;
+	}
+}
+
+/* Full-bleed banners use 100vw; clip so a desktop scrollbar never adds a sideways scroll. */
+html {
+	overflow-x: clip;
+}
+
+/* Centred reading column under a page banner. */
+.column {
+	width: 100%;
+	max-width: 880px;
+	margin-inline: auto;
 }
 
 *,
@@ -76,16 +102,21 @@ body {
 	font-size: 16px;
 	line-height: 1.4;
 	background-color: var(--bg-night);
-	/* Periwinkle haze up top (the game's blurred lobby), falling to deep indigo. */
+	/*
+		Night field with the game's large triangle pattern: a faint indigo glow under the
+		top bar, a deep indigo wash fading to night, and a 480px tile of big triangles
+		kept very low so panels and text stay the loudest thing.
+	*/
 	background-image:
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' viewBox='0 0 480 480'%3E%3Cg fill='%23fff' fill-opacity='0.07'%3E%3Cpath d='M0 0 L240 0 L120 208 Z'/%3E%3Cpath d='M240 0 L480 0 L360 208 Z'/%3E%3Cpath d='M120 208 L360 208 L240 416 Z'/%3E%3Cpath d='M0 416 L120 208 L240 416 Z' fill-opacity='0.04'/%3E%3C/g%3E%3C/svg%3E"),
-		radial-gradient(120% 70% at 50% -10%, #8b9cc4 0%, rgb(139 156 196 / 0) 70%),
-		linear-gradient(180deg, #4d5b86 0%, #2b3566 38%, #151b45 72%, var(--bg-night) 100%);
-	background-attachment: fixed;
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' viewBox='0 0 480 480'%3E%3Cg fill='%23fff' fill-opacity='0.035'%3E%3Cpath d='M0 0 L240 0 L120 208 Z'/%3E%3Cpath d='M240 0 L480 0 L360 208 Z'/%3E%3Cpath d='M120 208 L360 208 L240 416 Z'/%3E%3Cpath d='M0 416 L120 208 L240 416 Z' fill-opacity='0.02'/%3E%3C/g%3E%3C/svg%3E"),
+		radial-gradient(90% 50% at 50% 0%, rgb(46 60 120 / 0.55) 0%, transparent 70%),
+		linear-gradient(180deg, #151b45 0%, #10163a 40%, var(--bg-night) 80%);
 	background-size:
 		480px 480px,
 		100% 100%,
 		100% 100%;
+	background-repeat: repeat, no-repeat, no-repeat;
+	background-attachment: fixed;
 }
 
 a {
@@ -127,6 +158,41 @@ a {
 	text-transform: uppercase;
 	line-height: 0.95;
 	letter-spacing: 0.01em;
+	text-wrap: balance;
+}
+
+p,
+li,
+dd {
+	text-wrap: pretty;
+}
+
+/* Every number that can change or sits in a column keeps its width. */
+time,
+td,
+dd,
+[role='timer'] {
+	font-variant-numeric: tabular-nums;
+}
+
+/* Prerendered countdowns carry the build-time value until the clock starts. */
+.pending {
+	opacity: 0.35;
+	animation: pending 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pending {
+	to {
+		opacity: 0.6;
+	}
+}
+
+/* Status chips pop in when a timer crosses a threshold, so the change gets noticed. */
+@keyframes chip-in {
+	from {
+		opacity: 0;
+		transform: translateY(-4px) scale(0.92);
+	}
 }
 
 .label {
@@ -162,26 +228,24 @@ a {
 	text-decoration: none;
 	cursor: pointer;
 	position: relative;
+	border-radius: 4px;
+	transition:
+		background-color 150ms ease,
+		transform 100ms ease;
+}
+
+.btn-primary:active,
+.btn-secondary:active {
+	transform: translateY(1px);
 }
 
 .btn-primary {
 	background: var(--orange);
 	color: var(--text);
-	padding-left: 26px;
-}
-
-.btn-primary::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	width: 6px;
-	background: var(--orange-flare);
 }
 
 .btn-primary:hover {
-	background: var(--orange-flare);
+	background: #f26e22;
 }
 
 /* Slanted tag, like the game's NEW! / NEXT markers. */
@@ -227,6 +291,7 @@ a {
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	white-space: nowrap;
+	animation: chip-in 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .chip-soon {
@@ -237,6 +302,220 @@ a {
 .chip-crit {
 	background: var(--crit);
 	color: var(--text);
+}
+
+/* ---------- reading pages ---------- */
+
+/*
+	Plain prose under a page banner: one column, hairlines between sections, no boxes.
+	Used by event, season, zone, FAQ and info pages so they all read the same way.
+*/
+.doc {
+	max-width: 680px;
+	margin-inline: auto;
+	color: var(--text-dim);
+	font-size: 17px;
+	line-height: 1.65;
+}
+
+.doc section {
+	padding-block: 32px;
+	border-top: 1px solid var(--line);
+}
+.doc section:first-child {
+	padding-top: 0;
+	border-top: 0;
+}
+
+/* Prose on the left, a details panel on the right. Panel comes first on small screens. */
+.doc.split {
+	max-width: 1040px;
+	display: grid;
+	gap: 28px;
+}
+.doc.split .main {
+	min-width: 0;
+	max-width: 660px;
+}
+@media (min-width: 900px) {
+	.doc.split {
+		grid-template-columns: minmax(0, 1fr) 320px;
+		gap: 56px;
+		align-items: start;
+	}
+	.doc.split > aside {
+		grid-column: 2;
+		grid-row: 1;
+		position: sticky;
+		top: 96px;
+	}
+	.doc.split .main {
+		grid-column: 1;
+		grid-row: 1;
+	}
+}
+
+/* Section heading: plain sentence-case text. Size and weight carry the hierarchy. */
+.doc h2 {
+	margin: 0 0 8px;
+	font-family: var(--font-body);
+	font-weight: 500;
+	font-size: clamp(21px, 3.2vw, 24px);
+	line-height: 1.25;
+	color: var(--text);
+	text-wrap: balance;
+}
+
+.doc h3 {
+	margin: 24px 0 6px;
+	font-size: 17px;
+	font-weight: 500;
+	color: var(--text);
+}
+
+.doc p,
+.doc ul,
+.doc ol,
+.doc dl {
+	margin: 0 0 12px;
+}
+.doc p:last-child {
+	margin-bottom: 0;
+}
+.doc ul,
+.doc ol {
+	padding-left: 20px;
+}
+
+/* The sentence that answers the page's question, right under the key figures. */
+.doc .lead {
+	font-size: clamp(20px, 2.6vw, 24px);
+	line-height: 1.4;
+	color: var(--text);
+	text-wrap: pretty;
+}
+
+.doc .small {
+	font-size: 15px;
+}
+
+.doc strong {
+	color: var(--text);
+	font-weight: 500;
+}
+
+.doc a {
+	color: var(--cyan);
+	text-underline-offset: 3px;
+}
+
+.doc hr {
+	margin: 32px 0;
+	border: 0;
+	border-top: 1px solid var(--line);
+}
+
+.doc .todo {
+	padding: 2px 6px;
+	background: rgb(252 199 5 / 0.15);
+	color: var(--gold);
+}
+
+/*
+	Key figures: the numbers people came for, set big, with a small plain label above.
+	The type does the work. No tiles, no stripes, no icons.
+*/
+.doc .figures {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	gap: 20px 32px;
+	margin: 0 0 24px;
+}
+.doc .figures dt {
+	font-size: 15px;
+	line-height: 1.3;
+	color: var(--text-faint);
+}
+.doc .figures dd {
+	margin: 2px 0 0;
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: clamp(30px, 6vw, 40px);
+	line-height: 1.1;
+	color: var(--text);
+}
+/* Secondary facts (rewards, prices): same pattern, quieter. */
+.doc .figures.minor {
+	padding-top: 20px;
+	border-top: 1px solid var(--line);
+}
+.doc .figures.minor dd {
+	font-size: 22px;
+	line-height: 1.25;
+}
+.doc .figures dd small {
+	display: block;
+	margin-top: 2px;
+	font-family: var(--font-body);
+	font-weight: 400;
+	font-size: 15px;
+	color: var(--text-dim);
+}
+
+/* Bare data table, one hairline per row. */
+.doc table {
+	width: 100%;
+	margin: 4px 0 14px;
+	border-collapse: collapse;
+}
+.doc th,
+.doc td {
+	padding: 10px 12px 10px 0;
+	text-align: left;
+	border-bottom: 1px solid var(--line);
+}
+.doc thead th {
+	font-size: 13px;
+	color: var(--text-faint);
+}
+.doc tbody th {
+	font-weight: 400;
+	color: var(--text);
+}
+.doc td.t,
+.doc th.t {
+	padding-right: 0;
+	text-align: right;
+	white-space: nowrap;
+}
+.doc td.t {
+	font-size: 24px;
+	color: var(--text);
+}
+
+/* Inline link lists (other zones, other events, pager). */
+.doc .links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px 20px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.doc .links a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 36px;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
 
 /* ---------- motion ---------- */

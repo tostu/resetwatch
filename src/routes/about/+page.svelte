@@ -26,7 +26,7 @@
 	)}
 </svelte:head>
 
-<DocPage title="ABOUT" subtitle="A FAN-MADE RESET TRACKER">
+<DocPage title="ABOUT" subtitle="A FAN-MADE RESET TRACKER" tone="teal">
 	<h2>What it is</h2>
 	<p>
 		Resetwatch is a free countdown to the Overwatch weekly reset, the end of the current event and

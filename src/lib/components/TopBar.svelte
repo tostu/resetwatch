@@ -75,7 +75,9 @@
 				aria-label="Next reset: {next.label}, {coarse(next.remaining).toLowerCase()}"
 			>
 				<span class="label kicker" aria-hidden="true">NEXT RESET · <b>{next.label}</b></span>
-				<span class="num time" aria-hidden="true">{formatCountdown(next.remaining)}</span>
+				<span class="num time" class:pending={!clock.ready} aria-hidden="true"
+					>{formatCountdown(next.remaining)}</span
+				>
 			</div>
 		</div>
 	</div>
@@ -114,11 +116,8 @@
 		display: grid;
 		grid-template-columns: 1fr auto auto auto auto auto 1fr;
 		align-items: stretch;
-		background: linear-gradient(180deg, #131c32 0%, var(--bar) 100%);
-		box-shadow:
-			0 1px 0 #070b15,
-			0 2px 0 rgb(63 169 255 / 0.12),
-			0 12px 28px -12px rgb(0 0 0 / 0.65);
+		background: var(--bar);
+		box-shadow: 0 1px 0 var(--line);
 	}
 
 	/* ---------- brand ---------- */
@@ -138,7 +137,6 @@
 		width: 30px;
 		height: 30px;
 		color: var(--blue-edge);
-		filter: drop-shadow(0 0 6px rgb(63 169 255 / 0.5));
 	}
 
 	.word {
@@ -184,7 +182,7 @@
 		min-width: 0;
 		padding: 0 18px;
 		font-size: 16px;
-		color: rgb(255 255 255 / 0.62);
+		color: rgb(255 255 255 / 0.78);
 	}
 
 	.tab-l.sub {
@@ -313,7 +311,7 @@
 		white-space: nowrap;
 	}
 
-	/* Inner frame line, like the one inside the game's Play plate. */
+	/* Inner chamfered hairline, like the game's Play plate. */
 	.plate::before {
 		content: '';
 		position: absolute;
@@ -324,7 +322,7 @@
 		pointer-events: none;
 	}
 
-	/* Light streak sweeping across the plate, a nod to the game's Play button. */
+	/* Light band that sweeps across every few seconds. */
 	.plate::after {
 		content: '';
 		position: absolute;
@@ -332,15 +330,10 @@
 		bottom: 0;
 		left: -40%;
 		width: 30%;
-		background: linear-gradient(
-			90deg,
-			rgb(255 255 255 / 0),
-			rgb(255 255 255 / 0.35),
-			rgb(255 255 255 / 0)
-		);
+		background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
 		transform: skewX(-24deg);
-		animation: sweep 5s ease-in-out infinite;
 		pointer-events: none;
+		animation: sweep 5s ease-in-out infinite;
 	}
 
 	@keyframes sweep {
@@ -350,6 +343,12 @@
 		}
 		100% {
 			left: 130%;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.plate::after {
+			display: none;
 		}
 	}
 
@@ -431,12 +430,6 @@
 		overflow: hidden;
 		clip-path: inset(50%);
 		white-space: nowrap;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.plate::after {
-			display: none;
-		}
 	}
 
 	/* Not enough room for everything: drop the wordmark, then the season status. */
@@ -555,10 +548,6 @@
 			gap: 10px;
 			padding-bottom: 0;
 			clip-path: none;
-		}
-
-		.plate::before {
-			display: none;
 		}
 
 		.time {

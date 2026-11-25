@@ -1,15 +1,25 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import PageTitle from './PageTitle.svelte';
+	import PageHero from './PageHero.svelte';
+	import type { Tone, GlyphName } from '../tone';
 
-	let { title, subtitle, children }: { title: string; subtitle?: string; children: Snippet } =
-		$props();
+	let {
+		title,
+		subtitle,
+		tone = 'slate',
+		glyph = 'info',
+		children
+	}: {
+		title: string;
+		subtitle?: string;
+		tone?: Tone;
+		glyph?: GlyphName;
+		children: Snippet;
+	} = $props();
 </script>
 
 <div class="wrap page">
-	<div class="top">
-		<PageTitle {title} {subtitle} />
-	</div>
+	<PageHero {tone} {glyph} {title} {subtitle} />
 	<div class="doc">
 		{@render children()}
 	</div>
@@ -17,59 +27,20 @@
 
 <style>
 	.page {
-		padding-block: 24px 48px;
+		padding-block: 24px 64px;
 		padding-inline: 16px;
 	}
 
-	.top {
-		margin-bottom: 36px;
+	/* Prose styles live in layout.css (.doc). Info pages put h2s straight in the flow, so
+	   give those the same top rule the sectioned pages get. */
+	.doc > :global(h2) {
+		margin-top: 40px;
+		padding-top: 32px;
+		border-top: 1px solid var(--line);
 	}
-
-	.doc {
-		max-width: 760px;
-		color: var(--text-dim);
-		line-height: 1.55;
-		font-size: 16px;
-	}
-
-	.doc :global(h2) {
-		margin: 32px 0 8px;
-		font-family: var(--font-display);
-		font-style: italic;
-		font-weight: 800;
-		text-transform: uppercase;
-		font-size: 26px;
-		line-height: 1;
-		color: var(--text);
-	}
-
-	.doc :global(h2:first-child) {
+	.doc > :global(h2:first-child) {
 		margin-top: 0;
-	}
-
-	.doc :global(p),
-	.doc :global(ul),
-	.doc :global(dl) {
-		margin: 0 0 12px;
-	}
-
-	.doc :global(ul) {
-		padding-left: 20px;
-	}
-
-	.doc :global(strong),
-	.doc :global(dt) {
-		color: var(--text);
-	}
-
-	.doc :global(a) {
-		color: var(--cyan);
-		text-underline-offset: 3px;
-	}
-
-	.doc :global(.todo) {
-		padding: 2px 6px;
-		background: rgb(252 199 5 / 0.15);
-		color: var(--gold);
+		padding-top: 0;
+		border-top: 0;
 	}
 </style>

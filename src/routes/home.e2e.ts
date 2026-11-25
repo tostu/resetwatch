@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-test('home shows weekly, event and season cards', async ({ page }) => {
+test('home shows weekly countdown and season progress', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.getByRole('heading', { level: 1, name: 'RESETS' })).toBeVisible();
-	await expect(page.getByRole('article')).toHaveCount(3);
+	await expect(page.getByRole('heading', { level: 1, name: /Weekly reset/i })).toBeVisible();
+	await expect(page.getByRole('timer', { name: 'Weekly reset countdown' })).toBeVisible();
+	await expect(page.getByRole('progressbar', { name: 'Season progress' })).toBeVisible();
 });
 
 test('footer links to faq and legal pages', async ({ page }) => {

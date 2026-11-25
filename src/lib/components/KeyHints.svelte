@@ -36,70 +36,18 @@
 
 <svelte:window {onkeydown} />
 
-<div class="hints" aria-label="Keyboard shortcuts">
-	<div class="group">
-		<span class="hint"><kbd>1</kbd> <span class="label">RESETS</span></span>
-		<span class="hint"><kbd>2</kbd> <span class="label">SEASONS</span></span>
-		<span class="hint"><kbd>3</kbd> <span class="label">TIME ZONES</span></span>
-		<span class="hint"><kbd>4</kbd> <span class="label">FAQ</span></span>
-		<button type="button" class="hint help" onclick={() => (showHelp = !showHelp)}>
-			<kbd>?</kbd> <span class="label">SHORTCUTS</span>
-		</button>
-	</div>
-</div>
-
+<!-- Shortcuts stay active; the list only shows on `?` instead of a permanent strip over the content. -->
 {#if showHelp}
 	<div class="help-panel" role="note">
-		<p class="label">SHORTCUTS</p>
-		<p>1: Resets. 2: Seasons. 3: Time zones. 4: FAQ. ?: toggle this panel.</p>
+		<p class="label">Keyboard shortcuts</p>
+		<p>
+			<kbd>1</kbd> Resets <kbd>2</kbd> Seasons <kbd>3</kbd> Time zones <kbd>4</kbd> FAQ
+			<kbd>?</kbd> close
+		</p>
 	</div>
 {/if}
 
 <style>
-	.hints {
-		position: fixed;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		padding: 24px 16px 12px;
-		z-index: 40;
-		/* Fade strip so scrolled content never sits directly under the hints. */
-		background: linear-gradient(
-			0deg,
-			rgb(8 12 26 / 0.92) 0%,
-			rgb(8 12 26 / 0.6) 55%,
-			rgb(8 12 26 / 0) 100%
-		);
-		display: flex;
-		justify-content: flex-end;
-		pointer-events: none;
-		color: var(--text);
-		text-shadow: 0 1px 6px rgb(5 8 24 / 0.6);
-	}
-
-	.group {
-		display: flex;
-		gap: 16px;
-	}
-
-	.hint {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 13px;
-		pointer-events: auto;
-	}
-
-	.help {
-		background: none;
-		border: 0;
-		padding: 0;
-		margin: 0;
-		color: inherit;
-		cursor: pointer;
-		min-height: 24px;
-	}
-
 	kbd {
 		display: inline-flex;
 		align-items: center;
@@ -120,22 +68,33 @@
 	.help-panel {
 		position: fixed;
 		left: 50%;
-		bottom: 48px;
+		bottom: 24px;
 		transform: translateX(-50%);
 		z-index: 45;
-		padding: 12px 20px;
-		background: var(--panel);
-		border-top: 2px solid var(--blue-edge);
+		display: grid;
+		gap: 8px;
+		padding: 14px 20px;
+		border-radius: 8px;
+		background: var(--surface-2);
+		border: 1px solid var(--line);
 		font-size: 14px;
+		color: var(--text-dim);
+		animation: chip-in 200ms ease;
 	}
 
 	.help-panel p {
 		margin: 0;
 	}
 
-	/* Touch devices have no keyboard: hide at any width (tablets too), not just phones. */
+	.help-panel kbd {
+		margin: 0 4px 0 10px;
+	}
+
+	.help-panel kbd:first-child {
+		margin-left: 0;
+	}
+
 	@media (max-width: 719px), (pointer: coarse) {
-		.hints,
 		.help-panel {
 			display: none;
 		}

@@ -40,7 +40,7 @@
 	)}
 </svelte:head>
 
-<DocPage title="CONTACT" subtitle="GET IN TOUCH">
+<DocPage title="CONTACT" subtitle="GET IN TOUCH" tone="teal">
 	<h2>Write a message</h2>
 	<p>
 		Pick a topic and write your message. Sending opens your email app with everything filled in.
@@ -91,8 +91,9 @@
 		max-width: 560px;
 		margin-bottom: 12px;
 		padding: 20px;
-		background: var(--panel);
-		border-left: 6px solid var(--blue-edge);
+		border-radius: 6px;
+		background: var(--surface-2);
+		border: 1px solid var(--line);
 	}
 
 	.field {

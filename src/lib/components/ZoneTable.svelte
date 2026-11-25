@@ -111,21 +111,24 @@
 <style>
 	.zones {
 		width: 100%;
-		border-collapse: separate;
-		border-spacing: 0 4px;
+		border-collapse: collapse;
 		font-size: 16px;
+	}
+	tbody tr + tr {
+		border-top: 1px solid var(--line);
 	}
 	thead th {
 		padding: 0 14px 4px;
 		font-size: 13px;
 		text-align: left;
-		color: var(--gold);
+		color: var(--text-faint);
 	}
 	thead .t {
 		text-align: right;
 	}
-	tbody tr {
-		background: rgb(5 8 24 / 0.45);
+	thead th {
+		padding-top: 10px;
+		padding-bottom: 10px;
 	}
 	tbody th,
 	tbody td {
@@ -139,10 +142,10 @@
 		font-weight: 500;
 	}
 	tbody tr.you {
-		background: linear-gradient(90deg, rgb(255 255 255 / 0.22), rgb(5 8 24 / 0.45) 75%);
+		background: rgb(255 255 255 / 0.05);
 	}
 	tbody tr.you th {
-		border-left-color: var(--gold);
+		border-left-color: var(--accent);
 	}
 	.city {
 		margin-right: 8px;
@@ -171,16 +174,15 @@
 	}
 	.day {
 		font-size: 15px;
-		color: var(--cyan);
+		color: var(--text);
 	}
 	td.off {
-		color: rgb(255 255 255 / 0.75);
+		color: var(--text-dim);
 	}
 	td.t {
 		text-align: right;
-		font-size: 24px;
-		font-style: italic;
-		font-weight: 800;
+		font-size: 20px;
+		font-weight: 700;
 		white-space: nowrap;
 	}
 	.sr-only {

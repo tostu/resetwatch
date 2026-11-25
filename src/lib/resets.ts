@@ -3,6 +3,7 @@
  * CONFIG season/event values are fallbacks; D1 data baked into data/events.json is merged over them.
  */
 import eventsJson from './data/events.json';
+import { eventSlug } from './slug';
 
 export const RESET_TZ = 'America/New_York';
 
@@ -41,11 +42,41 @@ const WEEK = 7 * DAY;
 
 /* ---------- Baked D1 events (src/lib/data/events.json) ---------- */
 
+export interface Fact {
+	label: string;
+	value: string;
+}
+
 export interface BakedEvent {
 	kind: 'season_start' | 'season_end' | 'event' | string;
 	name?: string | null;
 	starts_at?: string | null;
 	ends_at?: string | null;
+	/** One-sentence summary written by the ingest (never copied text). */
+	summary?: string | null;
+	/** Key values from the official post, e.g. `{label: 'Reward tiers', value: '24'}`. */
+	facts?: Fact[];
+	/** Deep link into the official post (overwatch.blizzard.com only, checked at bake time). */
+	source_url?: string | null;
+	source_title?: string | null;
+}
+
+/** What a card shows below the countdown. */
+export interface EventDetails {
+	summary?: string;
+	facts: Fact[];
+	sourceUrl?: string;
+	sourceTitle?: string;
+}
+
+export function detailsOf(e: BakedEvent): EventDetails | undefined {
+	const d: EventDetails = {
+		summary: e.summary || undefined,
+		facts: Array.isArray(e.facts) ? e.facts : [],
+		sourceUrl: e.source_url || undefined,
+		sourceTitle: e.source_title || undefined
+	};
+	return d.summary || d.facts.length || d.sourceUrl ? d : undefined;
 }
 
 export interface BakedEvents {
@@ -55,35 +86,77 @@ export interface BakedEvents {
 
 const baked = eventsJson as BakedEvents;
 
+/** The baked D1 rows, for event pages. */
+export function bakedEvents(): BakedEvents {
+	return baked;
+}
+
 /**
  * Snap a date (`YYYY-MM-DD`) or ISO instant to the nearest weekly reset.
  * Seasons, events and patches all go live at the weekly reset, so D1 rows with
  * sloppy times (midnight UTC, 1 PM ET, ...) still land on the right instant.
  * Returns NaN for unparseable input.
  */
-export function snapToReset(input: string): number {
+/** Date-only (`YYYY-MM-DD`) means noon ET-ish on that day; anything else is parsed as an instant. */
+function toInstant(input: string): number {
 	const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input);
-	// Date-only: noon ET-ish on that day, so it snaps to that day's reset.
-	const t = dateOnly
-		? Date.UTC(+dateOnly[1], +dateOnly[2] - 1, +dateOnly[3], 17)
-		: Date.parse(input);
+	return dateOnly ? Date.UTC(+dateOnly[1], +dateOnly[2] - 1, +dateOnly[3], 17) : Date.parse(input);
+}
+
+export function snapToReset(input: string): number {
+	const t = toInstant(input);
 	if (Number.isNaN(t)) return NaN;
 	// First reset after (t - half a week) = the reset closest to t.
 	return nextOccurrence(CONFIG.weekly, t - WEEK / 2);
 }
 
+/** Snap to the reset time of day (2 PM ET) on the nearest day, any weekday. */
+export function snapToDailyReset(input: string): number {
+	const t = toInstant(input);
+	if (Number.isNaN(t)) return NaN;
+	return nextOccurrence({ hour: CONFIG.weekly.hour, minute: CONFIG.weekly.minute }, t - DAY / 2);
+}
+
 /**
- * Season start instants (ms): fallback list plus season_start events,
- * snapped to the weekly reset, sorted and deduped.
+ * Start/end of an event. Multi-week events run reset to reset ("November 3 to December 7" ends at
+ * the Tuesday Dec 8 reset), so they snap to the weekly reset. Short ones (weekend Loot Hunt, Thu-Mon
+ * Drives) start and end on their own days, at the usual reset time.
+ */
+export function eventWindow(
+	startsAt: string | null | undefined,
+	endsAt: string
+): { startsAt?: number; endsAt: number } {
+	const rawS = startsAt ? toInstant(startsAt) : NaN;
+	const rawE = toInstant(endsAt);
+	const long = Number.isNaN(rawS) || rawE - rawS >= 6 * DAY;
+	const snap = long ? snapToReset : snapToDailyReset;
+	const s = startsAt ? snap(startsAt) : NaN;
+	return { startsAt: Number.isNaN(s) ? undefined : s, endsAt: snap(endsAt) };
+}
+
+/**
+ * Season start instants (ms): fallback list plus season_start events, snapped to the weekly reset,
+ * sorted and deduped. A D1 start within 2 weeks of a fallback start corrects it; one at least
+ * 6 weeks from every known start is a new season; anything in between is implausible (seasons run
+ * 8-9 weeks) and ignored, so one bad extraction cannot shift the season numbering.
  */
 export function mergeSeasonStarts(fallback: readonly string[], data: BakedEvents): number[] {
 	const out = new Set<number>();
 	for (const s of fallback) out.add(snapToReset(s));
+	out.delete(NaN);
 	for (const e of data.events) {
 		if (e.kind !== 'season_start' || !e.starts_at) continue;
-		out.add(snapToReset(e.starts_at));
+		const t = snapToReset(e.starts_at);
+		if (Number.isNaN(t) || out.has(t)) continue;
+		const known = [...out];
+		const near = known.find((k) => Math.abs(k - t) <= 2 * WEEK);
+		if (near !== undefined) {
+			out.delete(near);
+			out.add(t);
+		} else if (known.every((k) => Math.abs(k - t) >= 6 * WEEK)) {
+			out.add(t);
+		}
 	}
-	out.delete(NaN);
 	return [...out].sort((a, b) => a - b);
 }
 
@@ -93,10 +166,13 @@ export interface ActiveEvent {
 	startsAt?: number;
 	endsAt: number;
 	phase: 'live' | 'upcoming';
+	details?: EventDetails;
+	/** `/events/[slug]` page; only for D1 events, not the hardcoded fallback. */
+	slug?: string;
 }
 
 /** Max event cards shown at once. */
-export const MAX_EVENTS = 4;
+export const MAX_EVENTS = 6;
 
 /**
  * All kind=event rows not yet ended (relative to `now`): live ones first by end time,
@@ -113,15 +189,16 @@ export function activeEvents(
 	const out: ActiveEvent[] = [];
 	for (const e of data.events) {
 		if (e.kind !== 'event' || !e.ends_at) continue;
-		const endsAt = snapToReset(e.ends_at);
+		const { startsAt, endsAt } = eventWindow(e.starts_at, e.ends_at);
 		if (Number.isNaN(endsAt) || endsAt <= now) continue;
-		const s = e.starts_at ? snapToReset(e.starts_at) : NaN;
-		const startsAt = Number.isNaN(s) ? undefined : s;
+		const details = detailsOf(e);
 		out.push({
 			label: e.name || fallback.label,
 			startsAt,
 			endsAt,
-			phase: startsAt !== undefined && startsAt > now ? 'upcoming' : 'live'
+			phase: startsAt !== undefined && startsAt > now ? 'upcoming' : 'live',
+			...(details && { details }),
+			...(e.name && { slug: eventSlug(e.name, startsAt ?? endsAt) })
 		});
 	}
 	if (out.length === 0) {
@@ -139,6 +216,26 @@ let seasonStartsCache: number[] | undefined;
 /** Lazy: snapping needs the formatters defined further down. */
 function seasonStarts(): number[] {
 	return (seasonStartsCache ??= mergeSeasonStarts(CONFIG.seasons.starts, baked));
+}
+
+let seasonRowsCache: Map<number, BakedEvent> | undefined;
+/** season_start row for a (snapped) season start; a row with a source link wins over a bare seed. */
+export function seasonRow(start: number): BakedEvent | undefined {
+	if (!seasonRowsCache) {
+		seasonRowsCache = new Map();
+		for (const e of baked.events) {
+			if (e.kind !== 'season_start' || !e.starts_at) continue;
+			const t = snapToReset(e.starts_at);
+			const prev = seasonRowsCache.get(t);
+			if (!prev || (!prev.source_url && e.source_url)) seasonRowsCache.set(t, e);
+		}
+	}
+	return seasonRowsCache.get(start);
+}
+
+/** `Season 5: A Grim Doctrine` -> `A Grim Doctrine`; undefined for a bare `Season 6`. */
+export function seasonSubtitle(name?: string | null): string | undefined {
+	return name?.match(/season\s*\d+\s*[:–—-]\s*(.+)$/i)?.[1].trim() || undefined;
 }
 
 export function currentEvents(now: number): ActiveEvent[] {
@@ -304,6 +401,8 @@ export interface SeasonRef {
 	/** Season number within that year: `2026: SEASON 5`. */
 	number: number;
 	label: string;
+	/** Blizzard's season name, e.g. `A Grim Doctrine`, once the ingest has seen it. */
+	title?: string;
 	start: number;
 	end: number;
 }
@@ -329,6 +428,7 @@ export function seasonByIndex(idx: number): SeasonRef {
 		year,
 		number,
 		label: `${year}: SEASON ${number}`,
+		title: seasonSubtitle(seasonRow(startOf(idx))?.name),
 		start: startOf(idx),
 		end: startOf(idx + 1)
 	};
@@ -358,6 +458,9 @@ export interface ResetEntry {
 	endsAt: number;
 	remaining: number;
 	phase: 'live' | 'upcoming';
+	details?: EventDetails;
+	/** Event page slug (events only). */
+	slug?: string;
 }
 
 export function allResets(now: number): ResetEntry[] {
@@ -381,17 +484,24 @@ export function allResets(now: number): ResetEntry[] {
 			? entry('event', e.label.toUpperCase(), e.startsAt!, {
 					id: `event:${e.startsAt}:${e.endsAt}:${e.label}`,
 					name: e.label,
-					phase: 'upcoming'
+					phase: 'upcoming',
+					details: e.details,
+					slug: e.slug
 				})
 			: entry('event', e.label.toUpperCase(), e.endsAt, {
 					id: `event:${e.startsAt ?? ''}:${e.endsAt}:${e.label}`,
-					name: e.label
+					name: e.label,
+					details: e.details,
+					slug: e.slug
 				})
 	);
+	const seasonStartRow = seasonRow(season.start);
 	return [
 		entry('weekly', 'WEEKLY', nextOccurrence(CONFIG.weekly, now)),
 		...events,
-		entry('season', 'SEASON', season.end)
+		entry('season', 'SEASON', season.end, {
+			details: seasonStartRow ? detailsOf(seasonStartRow) : undefined
+		})
 	];
 }
 
