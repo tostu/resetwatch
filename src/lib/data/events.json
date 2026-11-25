@@ -1,17 +1,211 @@
 {
-	"generatedAt": "2026-11-17T23:32:23.293Z",
+	"generatedAt": "local-preview",
 	"events": [
 		{
+			"kind": "event",
+			"name": "Team Drives",
+			"starts_at": "2026-09-04T16:00:00Z",
+			"ends_at": "2026-09-06T18:00:00Z",
+			"summary": null,
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24295392/season-4-midcycle-takes-you-to-the-blizzcon-stage#:~:text=Team%20Drives",
+			"source_title": "Season 4 Midcycle Takes You To The BlizzCon Stage!"
+		},
+		{
+			"kind": "event",
+			"name": "Overwatch World Cup",
+			"starts_at": "2026-09-12T18:00:00Z",
+			"ends_at": null,
+			"summary": null,
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24294376/sink-your-teeth-into-overwatch-s-blizzcon-reveals",
+			"source_title": "Sink your teeth into Overwatch's BlizzCon Reveals!"
+		},
+		{
+			"kind": "event",
+			"name": "BlizzCon 2026",
+			"starts_at": "2026-09-12T18:00:00Z",
+			"ends_at": "2026-09-13T18:00:00Z",
+			"summary": "Watch for eligible drops and rewards.",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24295392/season-4-midcycle-takes-you-to-the-blizzcon-stage#:~:text=Overwatch%2C%20Together%20Again%20at%20BlizzCon",
+			"source_title": "Season 4 Midcycle Takes You To The BlizzCon Stage!"
+		},
+		{
+			"kind": "event",
+			"name": "Hero Trial",
+			"starts_at": "2026-09-12T18:10:00Z",
+			"ends_at": "2026-09-14T00:00:00Z",
+			"summary": null,
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24294376/sink-your-teeth-into-overwatch-s-blizzcon-reveals",
+			"source_title": "Sink your teeth into Overwatch's BlizzCon Reveals!"
+		},
+		{
+			"kind": "event",
+			"name": "Mythic Gift",
+			"starts_at": "2026-09-12T18:10:00Z",
+			"ends_at": "2026-10-05T00:00:00Z",
+			"summary": null,
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24294376/sink-your-teeth-into-overwatch-s-blizzcon-reveals",
+			"source_title": "Sink your teeth into Overwatch's BlizzCon Reveals!"
+		},
+		{
+			"kind": "event",
+			"name": "QuestWatch",
+			"starts_at": "2026-09-13T19:00:00Z",
+			"ends_at": null,
+			"summary": null,
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24294376/sink-your-teeth-into-overwatch-s-blizzcon-reveals",
+			"source_title": "Sink your teeth into Overwatch's BlizzCon Reveals!"
+		},
+		{
 			"kind": "season_start",
-			"name": "Season 4: Heroes of Busan",
-			"starts_at": "2026-08-11T19:00:00Z",
-			"ends_at": "2026-08-31T19:00:00Z"
+			"name": "Season 5: A Grim Doctrine",
+			"starts_at": "2026-10-06T18:00:00Z",
+			"ends_at": null,
+			"summary": "Play Season 5 for new Hero and game modes.",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303008/feed-your-hunger-in-reign-of-talon-season-5-a-grim-doctrine",
+			"source_title": "Feed Your Hunger in Reign of Talon – Season 5: A Grim Doctrine"
+		},
+		{
+			"kind": "event",
+			"name": "Mystery Madness: Graveyard Games",
+			"starts_at": "2026-10-06T18:00:00Z",
+			"ends_at": "2026-11-02T18:00:00Z",
+			"summary": "Die to earn new powers and rewards.",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303008/feed-your-hunger-in-reign-of-talon-season-5-a-grim-doctrine#:~:text=Raise%20the%20Dead%20in%20Mystery%20Madness%3A%20Graveyard%20Games",
+			"source_title": "Feed Your Hunger in Reign of Talon – Season 5: A Grim Doctrine"
+		},
+		{
+			"kind": "event",
+			"name": "Overwatch x Shadow Monarch",
+			"starts_at": "2026-10-06T18:00:00Z",
+			"ends_at": "2026-10-19T18:00:00Z",
+			"summary": "Level up for new skins and rewards.",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303008/feed-your-hunger-in-reign-of-talon-season-5-a-grim-doctrine#:~:text=The%20Real%20Hunt%20Begins%20with%20Overwatch%20x%20Shadow%20Monarch",
+			"source_title": "Feed Your Hunger in Reign of Talon – Season 5: A Grim Doctrine"
+		},
+		{
+			"kind": "event",
+			"name": "Tech Witches Collection",
+			"starts_at": "2026-10-09T18:00:00Z",
+			"ends_at": "2026-10-26T18:00:00Z",
+			"summary": "Buy skins from the Tech Witches Collection.",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303008/feed-your-hunger-in-reign-of-talon-season-5-a-grim-doctrine#:~:text=Tech%20Witches%20Collection",
+			"source_title": "Feed Your Hunger in Reign of Talon – Season 5: A Grim Doctrine"
+		},
+		{
+			"kind": "event",
+			"name": "Heroes and Hollows",
+			"starts_at": "2026-10-20T17:00:00Z",
+			"ends_at": null,
+			"summary": null,
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24304078/weekly-ish-recall-double-the-doki#:~:text=Heroes%20and%20Hollows",
+			"source_title": "Weekly(ish) Recall: Double The Doki"
+		},
+		{
+			"kind": "event",
+			"name": "Team Drives",
+			"starts_at": "2026-10-29T18:00:00Z",
+			"ends_at": "2026-11-01T18:00:00Z",
+			"summary": "Win Team Drives for Competitive Points.",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303008/feed-your-hunger-in-reign-of-talon-season-5-a-grim-doctrine#:~:text=Team%20Drives",
+			"source_title": "Feed Your Hunger in Reign of Talon – Season 5: A Grim Doctrine"
 		},
 		{
 			"kind": "event",
 			"name": "Taking Reign",
-			"starts_at": "2026-11-03T17:00:00Z",
-			"ends_at": "2026-12-07T17:00:00Z"
+			"starts_at": "2026-11-03T19:00:00Z",
+			"ends_at": "2026-12-07T18:00:00Z",
+			"summary": "Play for Epic Sigma skin and Legendary Resurgence Doomfist",
+			"facts": [
+				{ "label": "Reward tiers", "value": "24" },
+				{ "label": "Premium pass", "value": "1,000 Overwatch Coins" }
+			],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303010/reign-of-talon-s5-midcycle-sets-up-the-showdown#:~:text=An%20Eventful%20Reunion",
+			"source_title": "Reign of Talon – S5 Midcycle Sets Up the Showdown"
+		},
+		{
+			"kind": "event",
+			"name": "Overwatch x EVE Protocol",
+			"starts_at": "2026-11-03T19:00:00Z",
+			"ends_at": "2026-11-17T18:00:00Z",
+			"summary": "Get EVE Protocol skins and cosmetics",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303010/reign-of-talon-s5-midcycle-sets-up-the-showdown#:~:text=Protocol%20Engaged",
+			"source_title": "Reign of Talon – S5 Midcycle Sets Up the Showdown"
+		},
+		{
+			"kind": "event",
+			"name": "Excavation Initiative",
+			"starts_at": "2026-11-03T19:00:00Z",
+			"ends_at": "2026-12-07T18:00:00Z",
+			"summary": "Win three digs each week for a Loot Box",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303010/reign-of-talon-s5-midcycle-sets-up-the-showdown#:~:text=Junkrat%20Can%20Dig%20That",
+			"source_title": "Reign of Talon – S5 Midcycle Sets Up the Showdown"
+		},
+		{
+			"kind": "event",
+			"name": "Black Friday Vault Sale",
+			"starts_at": "2026-11-03T19:00:00Z",
+			"ends_at": "2026-12-07T18:00:00Z",
+			"summary": "Buy rare cosmetics in curated bundles",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303010/reign-of-talon-s5-midcycle-sets-up-the-showdown#:~:text=Open%20the%20Vault%20on%20Black%20Friday",
+			"source_title": "Reign of Talon – S5 Midcycle Sets Up the Showdown"
+		},
+		{
+			"kind": "event",
+			"name": "Junkrat's Loot Hunt",
+			"starts_at": "2026-11-20T18:00:00Z",
+			"ends_at": "2026-11-23T18:00:00Z",
+			"summary": "Complete challenges for up to 9 Loot Boxes",
+			"facts": [{ "label": "Bonus", "value": "Double XP" }],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303010/reign-of-talon-s5-midcycle-sets-up-the-showdown#:~:text=Junkrat%20Can%20Dig%20That",
+			"source_title": "Reign of Talon – S5 Midcycle Sets Up the Showdown"
+		},
+		{
+			"kind": "event",
+			"name": "Drives",
+			"starts_at": "2026-12-03T18:00:00Z",
+			"ends_at": "2026-12-07T18:00:00Z",
+			"summary": "Earn Competitive Points and Legacy Weapon Points",
+			"facts": [
+				{ "label": "Competitive Points", "value": "Up to 3,000" },
+				{ "label": "Legacy Weapon Points", "value": "Up to 3,000" }
+			],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303010/reign-of-talon-s5-midcycle-sets-up-the-showdown#:~:text=Drive%20Your%20Way",
+			"source_title": "Reign of Talon – S5 Midcycle Sets Up the Showdown"
+		},
+		{
+			"kind": "event",
+			"name": "OWCS World Finals Cheer Rally",
+			"starts_at": "2026-12-03T18:00:00Z",
+			"ends_at": "2026-12-07T18:00:00Z",
+			"summary": "Complete challenges for rewards during OWCS finals",
+			"facts": [],
+			"source_url": "https://overwatch.blizzard.com/en-us/news/24303010/reign-of-talon-s5-midcycle-sets-up-the-showdown#:~:text=All%20Eyes%20on%20the%20OWCS%20Finals",
+			"source_title": "Reign of Talon – S5 Midcycle Sets Up the Showdown"
+		},
+		{
+			"kind": "season_start",
+			"name": "Season 6",
+			"starts_at": "2026-12-08T19:00:00Z",
+			"ends_at": null,
+			"summary": null,
+			"facts": [],
+			"source_url": null,
+			"source_title": null
 		}
 	]
 }

@@ -10,10 +10,15 @@ import { dirname } from 'node:path';
 
 const OUT = new URL('../src/lib/data/events.json', import.meta.url);
 // Keep all season rows; drop events that ended more than 30 days ago.
-const SQL = `SELECT kind,name,starts_at,ends_at FROM events
-WHERE kind != 'event' OR ends_at IS NULL OR ends_at > strftime('%Y-%m-%dT%H:%M:%SZ','now','-30 days')
+// Needs the 2026-11-23 ingest migration (summary/facts/source columns). Before it runs, this
+// query fails and the existing events.json is kept.
+// Ended events stay a year: their /events pages keep answering "when did X end?".
+const SQL = `SELECT kind,name,starts_at,ends_at,summary,facts,source_url,source_title FROM events
+WHERE kind != 'event' OR ends_at IS NULL OR ends_at > strftime('%Y-%m-%dT%H:%M:%SZ','now','-365 days')
 ORDER BY starts_at`;
 const KINDS = new Set(['season_start', 'season_end', 'event']);
+/** Only link to official sources; anything else in D1 is dropped, not rendered. */
+const SOURCE_HOSTS = new Set(['overwatch.blizzard.com', 'us.forums.blizzard.com']);
 
 interface D1Response {
 	success: boolean;
@@ -21,15 +26,58 @@ interface D1Response {
 	result?: { success?: boolean; results?: Record<string, unknown>[] }[];
 }
 
+interface Fact {
+	label: string;
+	value: string;
+}
+
 interface Row {
 	kind: string;
 	name: string | null;
 	starts_at: string | null;
 	ends_at: string | null;
+	summary?: string | null;
+	facts?: Fact[];
+	source_url?: string | null;
+	source_title?: string | null;
 }
 
 const validDate = (v: unknown): v is string =>
 	typeof v === 'string' && !Number.isNaN(Date.parse(v));
+
+const shortText = (v: unknown, max: number): string | null =>
+	typeof v === 'string' && v.trim() && v.length <= max ? v.trim() : null;
+
+function sourceUrl(v: unknown): string | null {
+	if (typeof v !== 'string') return null;
+	try {
+		const u = new URL(v);
+		return u.protocol === 'https:' && SOURCE_HOSTS.has(u.hostname) ? v : null;
+	} catch {
+		return null;
+	}
+}
+
+function parseFacts(v: unknown): Fact[] {
+	if (typeof v !== 'string') return [];
+	try {
+		const arr: unknown = JSON.parse(v);
+		if (!Array.isArray(arr)) return [];
+		return arr
+			.filter(
+				(f): f is Fact =>
+					!!f &&
+					typeof f.label === 'string' &&
+					typeof f.value === 'string' &&
+					f.label.length <= 40 &&
+					f.value.length <= 60
+			)
+			.slice(0, 4)
+			.map((f) => ({ label: f.label, value: f.value }));
+	} catch {
+		return [];
+	}
+}
 
 async function existing(): Promise<{ generatedAt: string | null; events: Row[] } | null> {
 	try {
@@ -84,11 +132,16 @@ async function main(): Promise<void> {
 			console.warn(`[fetch-events] dropping invalid row: ${JSON.stringify(r)}`);
 			continue;
 		}
+		const url = sourceUrl(r.source_url);
 		events.push({
 			kind: r.kind,
 			name: typeof r.name === 'string' ? r.name : null,
 			starts_at: (r.starts_at as string | null) ?? null,
-			ends_at: (r.ends_at as string | null) ?? null
+			ends_at: (r.ends_at as string | null) ?? null,
+			summary: shortText(r.summary, 300),
+			facts: parseFacts(r.facts),
+			source_url: url,
+			source_title: url ? shortText(r.source_title, 200) : null
 		});
 	}
 
