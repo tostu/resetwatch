@@ -37,7 +37,7 @@ export const HOME_TITLE = 'Overwatch Weekly Reset Countdown & Time | Resetwatch'
 export const HOME_DESCRIPTION =
 	'When is the next Overwatch weekly reset? Live countdown to the Tuesday reset (2 PM ET / 11 AM PT), event end and season end, shown in your local time.';
 
-export const SEASONS_TITLE = 'Overwatch Season Schedule: End Dates & Countdown | Resetwatch';
+export const SEASONS_TITLE = 'When Is the Next Overwatch Season? Dates & Countdown | Resetwatch';
 export const SEASONS_DESCRIPTION =
 	'Current Overwatch season countdown, week-by-week progress, and start dates of the next seasons, in your local time.';
 

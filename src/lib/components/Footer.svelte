@@ -13,6 +13,7 @@
 				{ href: '/seasons', label: 'Season schedule' },
 				{ href: '/events', label: 'Current events' },
 				{ href: '/reset-time', label: 'Reset time by time zone' },
+				{ href: '/daily-reset', label: 'Daily challenge reset' },
 				{ href: '/about', label: 'About' },
 				{ href: '/contact', label: 'Contact' }
 			]

@@ -71,7 +71,7 @@ export function resetClock(ts: number): string {
 }
 
 export function seasonTitle(d: SeasonDetail): string {
-	return `${d.name}: Start & End Date | Resetwatch`;
+	return `${d.name} Release Date: Start, End & Countdown | Resetwatch`;
 }
 
 export function seasonDescription(d: SeasonDetail): string {
@@ -79,7 +79,7 @@ export function seasonDescription(d: SeasonDetail): string {
 	const e = longDate(d.season.end, 'America/New_York');
 	const verb = d.page.confirmed ? 'starts' : 'is expected to start';
 	const endVerb = d.endConfirmed ? 'ends' : 'ends around';
-	return `${d.name} ${verb} ${s} and ${endVerb} ${e} (${d.weeks} weeks). Live countdown in your local time.`;
+	return `When does ${d.name} start? It ${verb} ${s} and ${endVerb} ${e} (${d.weeks} weeks). Live countdown in your local time.`;
 }
 
 export function startAnswer(d: SeasonDetail): string {

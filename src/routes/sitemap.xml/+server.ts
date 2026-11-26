@@ -21,6 +21,7 @@ const PATHS: [path: string, lastmod?: string][] = [
 	...eventPages().map((e): [string, string] => [`/events/${e.slug}`, DATA_MODIFIED]),
 	['/reset-time'],
 	...ZONE_PAGES.map((z): [string] => [`/reset-time/${z.slug}`]),
+	['/daily-reset'],
 	['/faq'],
 	['/about', ABOUT_MODIFIED],
 	['/contact', CONTACT_MODIFIED]

@@ -6,7 +6,7 @@
 	import { breadcrumbJsonLd, jsonLdScript } from '../../lib/seo';
 	import PageHero from '#lib/components/PageHero.svelte';
 
-	const TITLE = 'Overwatch Reset Time by Time Zone | Resetwatch';
+	const TITLE = 'Overwatch Weekly Reset Time in Every Time Zone | Resetwatch';
 	const DESCRIPTION =
 		'What time is the Overwatch weekly reset in your time zone? Reset times for EST, PST, CST, UTC, UK, Central Europe, Brazil, India, Japan and Australia.';
 
@@ -96,6 +96,16 @@
 					{/each}
 				</p>
 			{/if}
+			<p class="note">
+				<span class="label">SHOP & WEEKLY CHALLENGES</span>
+				The weekly challenges and the shop rotation follow the same Tuesday reset, so the times above
+				apply to them as well. The in-game timer is always the final word.
+			</p>
+			<p class="note">
+				<span class="label">DAILY CHALLENGES</span>
+				Daily challenges are different: their timer is individual for every player.
+				<a href={resolve('/daily-reset')}>Where to find yours</a>.
+			</p>
 			<p class="note">
 				<span class="label">WHY IT MOVES</span>
 				The reset is fixed in US Eastern time, so it moves in other zones when US clocks change in March
