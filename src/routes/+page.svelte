@@ -23,6 +23,7 @@
 	import TzSwitch from '#lib/components/TzSwitch.svelte';
 	import ZoneTable from '#lib/components/ZoneTable.svelte';
 	import Glyph from '#lib/components/Glyph.svelte';
+	import WeekChecklist from '#lib/components/WeekChecklist.svelte';
 	import { eventTone, eventGlyph, toneStyle } from '../lib/tone';
 
 	$effect(() => clock.start());
@@ -240,6 +241,8 @@
 			</ul>
 		</section>
 	{/if}
+
+	<div class="block"><WeekChecklist /></div>
 
 	<section class="block" aria-labelledby="zones">
 		<div class="block-head">

@@ -12,7 +12,7 @@
 </svelte:head>
 
 <DocPage title="DATENSCHUTZ" subtitle="PRIVACY POLICY">
-	<p><strong>Stand: 2026-11-25</strong> · <a href="#english">English version below</a></p>
+	<p><strong>Stand: 2026-11-26</strong> · <a href="#english">English version below</a></p>
 
 	<h2 id="deutsch">Datenschutzerklärung (Deutsch)</h2>
 
@@ -29,8 +29,8 @@
 		Ihrem Browser, anhand der Uhr und Zeitzone Ihres Geräts. Beim Aufruf der Seite verarbeitet der
 		Hosting-Anbieter Cloudflare technisch notwendige Daten (Server-Logs). Eine anonyme
 		Reichweitenmessung (Cloudflare Web Analytics) und ein Feedback-Popup (Tally) laufen nur, wenn
-		Sie im Banner zustimmen. Eine
-		lokale Einstellung (Zeitzone) wird nur gespeichert, wenn Sie sie selbst ändern.
+		Sie im Banner zustimmen. Eine lokale Einstellung (Zeitzone) wird nur gespeichert, wenn Sie sie
+		selbst ändern.
 	</p>
 
 	<h3>3. Hosting und Server-Logs (Cloudflare)</h3>
@@ -83,6 +83,11 @@
 		übertragen. Nur wenn Sie manuell eine andere Zeitzone wählen, speichert die Seite diese Auswahl
 		im lokalen Speicher Ihres Browsers (Schlüssel <code>resetwatch:tz</code>). Der Wert bleibt auf
 		Ihrem Gerät und wird nie an einen Server gesendet.
+	</p>
+	<p>
+		Wenn Sie in der Wochen-Checkliste auf der Startseite einen Punkt abhaken, speichert die Seite
+		die Häkchen ebenfalls lokal (Schlüssel <code>resetwatch:checklist</code>). Sie verfallen mit dem
+		nächsten Weekly Reset und werden nie an einen Server gesendet.
 	</p>
 	<p>
 		Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG (von Ihnen ausdrücklich gewünschte Funktion) und Art. 6
@@ -190,7 +195,7 @@
 	<h3>12. Änderungen</h3>
 	<p>
 		Wenn sich die Datenverarbeitung ändert, wird diese Erklärung vorher angepasst. Stand:
-		2026-11-25.
+		2026-11-26.
 	</p>
 
 	<hr />
@@ -209,8 +214,8 @@
 		Resetwatch has no accounts and no ads. The countdowns run entirely in your browser, using your
 		device's clock and time zone. When you open the site, the hosting provider Cloudflare processes
 		technically necessary data (server logs). Anonymous audience measurement (Cloudflare Web
-		Analytics) and a feedback popup (Tally) only run if you agree in the banner. A local setting (time zone) is only stored if
-		you change it yourself.
+		Analytics) and a feedback popup (Tally) only run if you agree in the banner. A local setting
+		(time zone) is only stored if you change it yourself.
 	</p>
 
 	<h3>3. Hosting and server logs (Cloudflare)</h3>
@@ -259,6 +264,11 @@
 		transmitted. Only if you manually pick a different time zone does the site save that choice in
 		your browser's local storage (key <code>resetwatch:tz</code>). The value stays on your device
 		and is never sent to any server.
+	</p>
+	<p>
+		When you tick an item in the weekly checklist on the home page, the ticks are saved locally as
+		well (key <code>resetwatch:checklist</code>). They expire at the next weekly reset and are never
+		sent to any server.
 	</p>
 	<p>
 		Legal basis: § 25(2) no. 2 TDDDG (a function you explicitly requested) and Art. 6(1)(f) GDPR.
@@ -357,5 +367,5 @@
 	</p>
 
 	<h3>12. Changes</h3>
-	<p>If data processing changes, this page will be updated first. Last updated: 2026-11-25.</p>
+	<p>If data processing changes, this page will be updated first. Last updated: 2026-11-26.</p>
 </DocPage>
