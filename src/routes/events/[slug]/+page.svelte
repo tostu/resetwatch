@@ -15,7 +15,8 @@
 		durationDays
 	} from '../../../lib/event-pages';
 	import { absolute, breadcrumbJsonLd, jsonLdScript, OG_IMAGE } from '../../../lib/seo';
-	import { calendarUrl } from '../../../lib/calendar';
+	import { eventAddOnce, eventIcsPath, googleUrl } from '../../../lib/calendar';
+	import AddOnce from '#lib/components/AddOnce.svelte';
 	import { displayZone } from '../../../lib/timezone.svelte';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Glance from '#lib/components/Glance.svelte';
@@ -59,13 +60,8 @@
 		...(days ? [{ label: 'Duration', value: `${days} day${days === 1 ? '' : 's'}`, sub: '' }] : []),
 		...(p.details?.facts ?? []).map((f) => ({ label: f.label, value: f.value, sub: '' }))
 	]);
-	const calLink = $derived(
-		calendarUrl(
-			`Overwatch: ${p.name} ends`,
-			p.endsAt,
-			`Last chance for ${p.name}. Live countdown: ${absolute(`/events/${p.slug}`)}`
-		)
-	);
+	// The end reminder (with its day-before alarm) is what people want from a single event.
+	const calLink = $derived(googleUrl(eventAddOnce(p, Infinity)[0]));
 </script>
 
 <svelte:head>
@@ -124,16 +120,22 @@
 					{:else}
 						Event times follow the usual reset time, 11 AM PT / 2 PM ET.
 					{/if}
-					{#if phase !== 'ended'}
-						<!-- eslint-disable svelte/no-navigation-without-resolve -- external URL -->
-						<a class="cal" href={calLink} target="_blank" rel="noopener"
-							>Add the end to Google Calendar</a
-						>.
-						<!-- eslint-enable svelte/no-navigation-without-resolve -->
-					{/if}
 				</p>
 				{#if p.details?.summary}<p>{p.details.summary}</p>{/if}
 			</section>
+
+			{#if phase !== 'ended'}
+				<section aria-labelledby="cal">
+					<h2 id="cal">Put it in your calendar</h2>
+					<p>
+						<strong>Subscribe</strong> to the
+						<a href="{resolve('/calendar')}#subscribe">Overwatch calendar</a> and this event, every other
+						event and the weekly reset stay up to date by themselves.
+					</p>
+					<p>Or add just the end of {p.name}, with a reminder a day before:</p>
+					<AddOnce what="{p.name} end" google={calLink} ics={eventIcsPath(p)} hint />
+				</section>
+			{/if}
 
 			{#if qa[1]}
 				<section aria-labelledby="start">
@@ -205,9 +207,6 @@
 	.page {
 		padding-block: 24px 48px;
 		padding-inline: 16px;
-	}
-	.cal {
-		font-weight: 500;
 	}
 	.others {
 		list-style: none;

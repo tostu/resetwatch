@@ -19,6 +19,7 @@ const PATHS: [path: string, lastmod?: string][] = [
 	...SEASON_PAGES.map((s): [string, string] => [`/seasons/${s.slug}`, DATA_MODIFIED]),
 	['/events', DATA_MODIFIED],
 	...eventPages().map((e): [string, string] => [`/events/${e.slug}`, DATA_MODIFIED]),
+	['/calendar', DATA_MODIFIED],
 	['/reset-time'],
 	...ZONE_PAGES.map((z): [string] => [`/reset-time/${z.slug}`]),
 	['/daily-reset'],

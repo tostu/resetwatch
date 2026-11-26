@@ -9,16 +9,15 @@
 		jsonLdScript
 	} from '../../lib/seo';
 	import { seasonSlug } from '../../lib/season-pages';
-	import {
-		googleCalendarUrl,
-		FEED_URL,
-		FEED_WEBCAL_URL,
-		FEED_GOOGLE_URL,
-		FEED_OUTLOOK_URL
-	} from '../../lib/calendar';
+	import { googleCalendarUrl, seasonIcsPath, feedSeasons } from '../../lib/calendar';
 	import { displayZone } from '../../lib/timezone.svelte';
 	import TzSwitch from '#lib/components/TzSwitch.svelte';
 	import PageHero from '#lib/components/PageHero.svelte';
+	import CalendarSubscribe from '#lib/components/CalendarSubscribe.svelte';
+	import AddOnce from '#lib/components/AddOnce.svelte';
+
+	/** Single-season .ics files exist for the seasons in the build-time feed list. */
+	const HAS_ICS = new Set(feedSeasons(Date.now()).map((s) => s.index));
 
 	$effect(() => clock.start());
 
@@ -112,41 +111,22 @@
 								<span class="label dimlabel">STARTS</span>
 								{formatLocal(s.start, undefined, displayZone.zone)}
 							</span>
-							<!-- eslint-disable svelte/no-navigation-without-resolve -- external URL -->
-							<a
-								class="label cal"
-								href={googleCalendarUrl(s)}
-								target="_blank"
-								rel="noopener"
-								aria-label="Add {s.label} start to Google Calendar">+ GOOGLE CALENDAR</a
-							>
-							<!-- eslint-enable svelte/no-navigation-without-resolve -->
+							{#if HAS_ICS.has(s.index)}
+								<AddOnce
+									what="{s.label} start"
+									google={googleCalendarUrl(s)}
+									ics={seasonIcsPath(s)}
+								/>
+							{/if}
 						</li>
 					{/each}
 				</ul>
-				<div id="subscribe" class="subscribe">
-					<h3 class="label sub-head">SUBSCRIBE TO LAUNCH DATES</h3>
-					<p class="sub-note">
-						Season launches land in your calendar and update by themselves when dates change.
-					</p>
-					<!-- eslint-disable svelte/no-navigation-without-resolve -- webcal and external URLs -->
-					<p class="sub-actions">
-						<a class="btn-primary" href={FEED_GOOGLE_URL} target="_blank" rel="noopener"
-							>GOOGLE CALENDAR</a
-						>
-						<a class="label sub-link" href={FEED_WEBCAL_URL}>APPLE / DEFAULT APP</a>
-						<a class="label sub-link" href={FEED_OUTLOOK_URL} target="_blank" rel="noopener"
-							>OUTLOOK.COM</a
-						>
-					</p>
-					<!-- eslint-enable svelte/no-navigation-without-resolve -->
-					<p class="sub-note">
-						Other apps: add a calendar by URL and paste <code class="feed-url">{FEED_URL}</code>.
-						Prefer a one-off copy? <a href={resolve('/seasons.ics')} download>Download the .ics</a>.
-					</p>
-				</div>
 			</section>
+		</div>
 
+		<CalendarSubscribe compact />
+
+		<div>
 			<p class="note">
 				Season dates follow press reports of Blizzard's announced schedule. Start dates for 2027
 				seasons are estimates until Blizzard confirms them. Check the
@@ -166,53 +146,6 @@
 	.stack {
 		display: grid;
 		gap: 16px;
-	}
-	.cal {
-		font-size: 13px;
-		color: var(--cyan);
-		text-underline-offset: 3px;
-	}
-	.subscribe {
-		margin-top: 20px;
-		padding-top: 18px;
-		border-top: 1px solid var(--line);
-		scroll-margin-top: 80px;
-	}
-	.sub-head {
-		margin: 0 0 6px;
-		font-size: 15px;
-		color: var(--text);
-	}
-	.sub-note {
-		margin: 8px 0;
-		font-size: 14px;
-		color: var(--text-dim);
-	}
-	.sub-note a {
-		color: inherit;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-	.sub-actions {
-		margin: 12px 0;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 10px 20px;
-	}
-	.sub-link {
-		font-size: 14px;
-		color: var(--cyan);
-		text-underline-offset: 3px;
-	}
-	.feed-url {
-		display: inline-block;
-		padding: 1px 6px;
-		border-radius: 4px;
-		background: var(--surface-2, rgb(255 255 255 / 0.06));
-		font-size: 13px;
-		user-select: all;
-		overflow-wrap: anywhere;
 	}
 	.note {
 		margin: 0;

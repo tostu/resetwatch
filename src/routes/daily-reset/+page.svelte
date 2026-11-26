@@ -35,7 +35,8 @@
 	<div class="doc">
 		<section class="answer">
 			<p class="lead">
-				There is no single daily reset time. <strong>Your daily challenges have their own timer</strong
+				There is no single daily reset time. <strong
+					>Your daily challenges have their own timer</strong
 				>, so the time differs from player to player.
 			</p>
 			<p>
@@ -55,7 +56,8 @@
 		<section>
 			<h2>What resets at the same time for everyone?</h2>
 			<p>
-				The weekly reset is the same for every player: <strong>every Tuesday at 2 PM ET / 11 AM PT</strong
+				The weekly reset is the same for every player: <strong
+					>every Tuesday at 2 PM ET / 11 AM PT</strong
 				>. Weekly challenges and the shop rotation follow it.
 				<a href={resolve('/reset-time')}>See it in your time zone</a>
 				or watch the <a href={resolve('/')}>live countdown</a>.

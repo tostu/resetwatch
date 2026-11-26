@@ -164,7 +164,7 @@
 		</a>
 
 		<div class="hero-actions">
-			<a class="btn-primary" href="{resolve('/seasons')}#subscribe">Subscribe to season dates</a>
+			<a class="btn-primary" href="{resolve('/calendar')}#subscribe">Subscribe in your calendar</a>
 			<TzSwitch />
 		</div>
 
@@ -172,8 +172,8 @@
 			The Overwatch weekly reset is every Tuesday at 2 PM ET / 11 AM PT, which is 19:00 UTC in
 			winter and 18:00 UTC in summer. Above are live countdowns to the reset and the season end,
 			below the current events, all in your local time. See the
-			<a href={resolve('/seasons')}>full season schedule</a> for week-by-week progress, or add the
-			season launches to your <a href={resolve('/seasons.ics')}>calendar (.ics)</a>.
+			<a href={resolve('/seasons')}>full season schedule</a> for week-by-week progress, or
+			<a href={resolve('/calendar')}>subscribe to one calendar</a> with the reset, events and season launches.
 		</p>
 	</section>
 

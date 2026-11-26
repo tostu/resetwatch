@@ -15,6 +15,7 @@
 	import Glyph from '#lib/components/Glyph.svelte';
 	import { eventTone, eventGlyph, toneStyle } from '../../lib/tone';
 	import TzSwitch from '#lib/components/TzSwitch.svelte';
+	import CalendarSubscribe from '#lib/components/CalendarSubscribe.svelte';
 
 	$effect(() => clock.start());
 
@@ -146,6 +147,8 @@
 				No events known right now. Check the <a href={resolve('/seasons')}>season schedule</a>.
 			</p>
 		{/each}
+
+		<CalendarSubscribe compact />
 	</div>
 </div>
 
