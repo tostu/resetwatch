@@ -11,7 +11,7 @@
 			links: [
 				{ href: '/faq', label: 'FAQ' },
 				{ href: '/seasons', label: 'Season schedule' },
-				{ href: '/events', label: 'Current events' },
+				{ href: '/events', label: 'Events & seasons' },
 				{ href: '/calendar', label: 'Calendar subscription' },
 				{ href: '/reset-time', label: 'Reset time by time zone' },
 				{ href: '/daily-reset', label: 'Daily challenge reset' },

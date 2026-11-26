@@ -25,6 +25,7 @@
 			<a class="btn-primary" href={resolve('/')}>Back to resets</a>
 			<a class="btn-secondary" href={resolve('/faq')}>FAQ</a>
 			<a class="btn-secondary" href={resolve('/seasons')}>Seasons</a>
+			<a class="btn-secondary" href={resolve('/events')}>Events</a>
 		</div>
 	</PageHero>
 </div>

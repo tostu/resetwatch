@@ -41,9 +41,9 @@ export const SEASONS_TITLE = 'When Is the Next Overwatch Season? Dates & Countdo
 export const SEASONS_DESCRIPTION =
 	'Current Overwatch season countdown, week-by-week progress, and start dates of the next seasons, in your local time.';
 
-export const EVENTS_TITLE = 'Overwatch Events: Current & Upcoming End Dates | Resetwatch';
+export const EVENTS_TITLE = 'Overwatch Events & Seasons: Current & Upcoming Dates | Resetwatch';
 export const EVENTS_DESCRIPTION =
-	'Every current and upcoming Overwatch limited-time event with live countdowns, start and end dates in your local time, key rewards, and links to the official posts.';
+	'Every current and upcoming Overwatch limited-time event and season with live countdowns, start and end dates in your local time, key rewards, and links to the official posts.';
 
 export const FAQ_TITLE = 'Overwatch Reset Times FAQ: Weekly, Event & Season | Resetwatch';
 export const FAQ_DESCRIPTION =

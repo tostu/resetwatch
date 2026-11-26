@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { clock } from '../../lib/now.svelte';
-	import { coarse, formatLocal } from '../../lib/resets';
-	import { eventPages, eventPhase, type EventPage } from '../../lib/event-pages';
+	import { coarse, formatLocal, seasonAt, seasonByIndex, type SeasonRef } from '../../lib/resets';
+	import { eventPages, type EventPage } from '../../lib/event-pages';
+	import { SEASON_PAGES } from '../../lib/season-pages';
 	import {
 		EVENTS_TITLE,
 		EVENTS_DESCRIPTION,
@@ -13,24 +14,91 @@
 	import { displayZone } from '../../lib/timezone.svelte';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Glyph from '#lib/components/Glyph.svelte';
-	import { eventTone, eventGlyph, toneStyle } from '../../lib/tone';
+	import { eventTone, eventGlyph, toneStyle, type GlyphName } from '../../lib/tone';
 	import TzSwitch from '#lib/components/TzSwitch.svelte';
 	import CalendarSubscribe from '#lib/components/CalendarSubscribe.svelte';
 
 	$effect(() => clock.start());
 
-	const all = eventPages();
+	/** One list row: a limited-time event or a season, so both share the same timeline. */
+	interface Item {
+		key: string;
+		kind: 'event' | 'season';
+		name: string;
+		href: string;
+		/** Absolute URL for JSON-LD. */
+		url: string;
+		startsAt?: number;
+		endsAt: number;
+		facts: { label: string; value: string }[];
+		style: string;
+		glyph: GlyphName;
+	}
+
+	const eventItem = (e: EventPage): Item => ({
+		key: `e:${e.slug}`,
+		kind: 'event',
+		name: e.name,
+		href: resolve('/events/[slug]', { slug: e.slug }),
+		url: absolute(`/events/${e.slug}`),
+		startsAt: e.startsAt,
+		endsAt: e.endsAt,
+		facts: e.details?.facts.slice(0, 2) ?? [],
+		style: toneStyle(eventTone(e.slug)),
+		glyph: eventGlyph(e.slug)
+	});
+
+	const seasonItem = (s: SeasonRef, slug: string, confirmed: boolean, now: number): Item => {
+		const weeks = Math.round((s.end - s.start) / (7 * 86_400_000));
+		const live = s.start <= now && now < s.end;
+		const week = Math.min(weeks, Math.floor((now - s.start) / (7 * 86_400_000)) + 1);
+		return {
+			key: `s:${slug}`,
+			kind: 'season',
+			name: `Season ${s.number}${s.title ? `: ${s.title}` : ` (${s.year})`}`,
+			href: resolve('/seasons/[slug]', { slug }),
+			url: absolute(`/seasons/${slug}`),
+			startsAt: s.start,
+			endsAt: s.end,
+			facts: live
+				? [{ label: 'Week', value: `${week} of ${weeks}` }]
+				: [
+						{ label: 'Length', value: `${weeks} weeks` },
+						...(confirmed ? [] : [{ label: 'Start date', value: 'estimate' }])
+					],
+			style: toneStyle('crimson'),
+			glyph: 'shield'
+		};
+	};
+
+	const events = eventPages();
+	/** Every season with its own page: the archive, the current one and the next announced. */
+	const seasons = SEASON_PAGES.map((p) => ({ ...p, ref: seasonByIndex(p.index) }));
+
+	const phaseOf = (it: Item, now: number) =>
+		it.endsAt <= now
+			? 'ended'
+			: it.startsAt !== undefined && it.startsAt > now
+				? 'upcoming'
+				: 'live';
+
+	const all = $derived([
+		...events.map(eventItem),
+		...seasons.map((s) => seasonItem(s.ref, s.slug, s.confirmed, clock.now))
+	]);
 	const live = $derived(
-		all.filter((e) => eventPhase(e, clock.now) === 'live').sort((a, b) => a.endsAt - b.endsAt)
+		all.filter((e) => phaseOf(e, clock.now) === 'live').sort((a, b) => a.endsAt - b.endsAt)
 	);
 	const upcoming = $derived(
 		all
-			.filter((e) => eventPhase(e, clock.now) === 'upcoming')
+			.filter((e) => phaseOf(e, clock.now) === 'upcoming')
 			.sort((a, b) => a.startsAt! - b.startsAt!)
 	);
 	const ended = $derived(
-		all.filter((e) => eventPhase(e, clock.now) === 'ended').sort((a, b) => b.endsAt - a.endsAt)
+		all.filter((e) => phaseOf(e, clock.now) === 'ended').sort((a, b) => b.endsAt - a.endsAt)
 	);
+	const liveEvents = $derived(live.filter((e) => e.kind === 'event'));
+	const season = $derived(seasonAt(clock.now));
 
 	/**
 	 * Ended events stay in the prerendered HTML (and the sitemap), so crawlers can still reach
@@ -45,7 +113,7 @@
 		].filter((g) => g.items.length)
 	);
 
-	const at = (e: EventPage, verb: string) => (verb === 'Starts' ? e.startsAt! : e.endsAt);
+	const at = (e: Item, verb: string) => (verb === 'Starts' ? e.startsAt! : e.endsAt);
 
 	/** "13 DAYS" -> ["13", "days"] for a big number with a small unit. */
 	const left = (ms: number): [string, string] => {
@@ -64,7 +132,7 @@
 	{@html jsonLdScript(
 		breadcrumbJsonLd([
 			{ name: 'Overwatch Weekly Reset', path: '/' },
-			{ name: 'Overwatch Events', path: '/events' }
+			{ name: 'Overwatch Events & Seasons', path: '/events' }
 		])
 	)}
 	{@html jsonLdScript({
@@ -73,8 +141,8 @@
 		itemListElement: [...live, ...upcoming].map((e, i) => ({
 			'@type': 'ListItem',
 			position: i + 1,
-			name: e.name,
-			url: absolute(`/events/${e.slug}`)
+			name: e.kind === 'season' ? `Overwatch ${e.name}` : e.name,
+			url: e.url
 		}))
 	})}
 </svelte:head>
@@ -83,9 +151,11 @@
 	<PageHero
 		tone="orange"
 		glyph="star"
-		eyebrow="LIMITED TIME"
-		title="EVENTS"
-		subtitle={live.length ? `${live.length} LIVE NOW` : 'NO EVENT LIVE'}
+		eyebrow="SCHEDULE"
+		title="EVENTS & SEASONS"
+		subtitle={liveEvents.length
+			? `${liveEvents.length} EVENT${liveEvents.length === 1 ? '' : 'S'} LIVE · ${season.label}`
+			: `NO EVENT LIVE · ${season.label}`}
 		srPrefix="Overwatch"
 		srSuffix="Countdowns &amp; End Dates"
 		ms={live[0] ? live[0].endsAt - clock.now : undefined}
@@ -96,9 +166,10 @@
 
 	<div class="list">
 		<p class="intro">
-			Start and end dates for every limited-time event, in your time zone. Most change over at the
-			<a href={resolve('/')}>weekly reset</a>, Tuesday 11 AM PT / 2 PM ET. Dates come from the
-			official Overwatch news and patch notes.
+			Start and end dates for every limited-time event and season, in your time zone. Most change
+			over at the <a href={resolve('/')}>weekly reset</a>, Tuesday 11 AM PT / 2 PM ET. Dates come
+			from the official Overwatch news and patch notes. Week-by-week progress is on the
+			<a href={resolve('/seasons')}>season page</a>.
 		</p>
 
 		{#each groups as g (g.id)}
@@ -108,23 +179,21 @@
 					<span class="count">{g.items.length}</span>
 				</h2>
 				<ul class="rows">
-					{#each g.items as e (e.slug)}
+					{#each g.items as e (e.key)}
 						<li>
-							<a
-								class="row"
-								href={resolve('/events/[slug]', { slug: e.slug })}
-								style={toneStyle(eventTone(e.slug))}
-							>
-								<span class="cell" aria-hidden="true"><Glyph name={eventGlyph(e.slug)} /></span>
+							<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- href comes from resolve() in eventItem/seasonItem -->
+							<a class="row" href={e.href} style={e.style}>
+								<span class="cell" aria-hidden="true"><Glyph name={e.glyph} /></span>
 								<span class="body">
+									{#if e.kind === 'season'}<span class="label kind">Season</span>{/if}
 									<span class="name">{e.name}</span>
 									<span class="when">
 										{g.verb}
 										{formatLocal(at(e, g.verb), undefined, displayZone.zone)}
 									</span>
-									{#if e.details?.facts.length}
+									{#if e.facts.length}
 										<span class="facts">
-											{#each e.details.facts.slice(0, 2) as f (f.label)}
+											{#each e.facts as f (f.label)}
 												<span>{f.label}: <b>{f.value}</b></span>
 											{/each}
 										</span>
@@ -250,6 +319,11 @@
 		text-decoration: underline;
 		text-decoration-thickness: 2px;
 		text-underline-offset: 4px;
+	}
+	.kind {
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		color: var(--text-faint);
 	}
 	.when {
 		font-size: 15px;

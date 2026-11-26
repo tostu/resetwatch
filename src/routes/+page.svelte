@@ -189,7 +189,7 @@
 		<section class="block" aria-labelledby="events">
 			<div class="block-head">
 				<h2 id="events" class="display h2">Events</h2>
-				<a class="more" href={resolve('/events')}>All events →</a>
+				<a class="more" href={resolve('/events')}>All events &amp; seasons →</a>
 			</div>
 			<!-- Arcade-style tiles: flat colour field, one white glyph, yellow meta line, italic title. -->
 			<ul class="events">

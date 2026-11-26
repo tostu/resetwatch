@@ -85,7 +85,7 @@
 	{@html jsonLdScript(
 		breadcrumbJsonLd([
 			{ name: 'Overwatch Weekly Reset', path: '/' },
-			{ name: 'Overwatch Events', path: '/events' },
+			{ name: 'Overwatch Events & Seasons', path: '/events' },
 			{ name: p.name, path: `/events/${p.slug}` }
 		])
 	)}

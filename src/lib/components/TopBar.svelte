@@ -1,12 +1,63 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
+	import { afterNavigate } from '$app/navigation';
 	import { clock } from '../now.svelte';
 	import { nextReset, seasonAt, formatCountdown, coarse, urgency } from '../resets';
 
 	let next = $derived(nextReset(clock.now));
 	let season = $derived(seasonAt(clock.now));
 	let level = $derived(urgency(next.remaining));
+
+	/** Every page, so nothing depends on scrolling down to the footer. */
+	const menu = [
+		{
+			title: 'TRACK',
+			links: [
+				{ href: '/', label: 'Weekly reset countdown' },
+				{ href: '/seasons', label: 'Season schedule' },
+				{ href: '/events', label: 'Events & seasons' },
+				{ href: '/calendar', label: 'Calendar subscription' }
+			]
+		},
+		{
+			title: 'GUIDES',
+			links: [
+				{ href: '/reset-time', label: 'Reset time by time zone' },
+				{ href: '/daily-reset', label: 'Daily challenge reset' },
+				{ href: '/shop-reset', label: 'Shop reset' },
+				{ href: '/faq', label: 'FAQ' }
+			]
+		},
+		{
+			title: 'MORE',
+			links: [
+				{ href: '/widget', label: 'Widget & OBS overlay' },
+				{ href: '/about', label: 'About' },
+				{ href: '/contact', label: 'Contact' }
+			]
+		}
+	] as const;
+
+	let menuOpen = $state(false);
+	let menuBtn = $state<HTMLButtonElement>();
+	let menuPanel = $state<HTMLDivElement>();
+
+	afterNavigate(() => (menuOpen = false));
+
+	function onWindowClick(e: MouseEvent) {
+		if (!menuOpen) return;
+		const t = e.target as Node;
+		if (menuBtn?.contains(t) || menuPanel?.contains(t)) return;
+		menuOpen = false;
+	}
+
+	function onWindowKey(e: KeyboardEvent) {
+		if (e.key === 'Escape' && menuOpen) {
+			menuOpen = false;
+			menuBtn?.focus();
+		}
+	}
 
 	/** Orange "something here needs a look" dot, like the game's unread markers. */
 	let tabs = $derived([
@@ -24,9 +75,20 @@
 			dot: season.end - clock.now < 7 * 86_400_000,
 			dotText: 'season ends this week'
 		},
-		{ href: '/reset-time', label: 'TIME ZONES', side: 'l', sub: true, dot: false, dotText: '' },
-		{ href: '/faq', label: 'FAQ', side: 'r', sub: true, dot: false, dotText: '' }
+		{
+			href: '/reset-time',
+			label: 'TIME ZONES',
+			side: 'l',
+			sub: true,
+			desktopOnly: true,
+			dot: false,
+			dotText: ''
+		},
+		{ href: '/events', label: 'SCHEDULE', side: 'r', sub: true, dot: false, dotText: '' }
 	] as const);
+
+	/** Highlight MENU when the current page is only reachable through it. */
+	let menuActive = $derived(!tabs.some((t) => isActive(t.href)));
 
 	$effect(() => clock.start());
 
@@ -41,6 +103,8 @@
 	The <nav> uses display: contents there so its two links sit either side of the plate;
 	on phones it becomes the fixed bottom tab bar.
 -->
+<svelte:window onclick={onWindowClick} onkeydown={onWindowKey} />
+
 <header class="topbar">
 	<a class="brand" href={resolve('/')} aria-label="Resetwatch home">
 		<svg viewBox="0 0 32 32" class="mark" aria-hidden="true">
@@ -56,6 +120,7 @@
 			<a
 				class="tab tab-{tab.side} label"
 				class:sub={'sub' in tab}
+				class:desktop-only={'desktopOnly' in tab}
 				class:active={isActive(tab.href)}
 				href={resolve(tab.href)}
 				aria-current={isActive(tab.href) ? 'page' : undefined}
@@ -65,7 +130,43 @@
 				{#if tab.dot}<span class="sr-only">({tab.dotText})</span>{/if}
 			</a>
 		{/each}
+		<button
+			bind:this={menuBtn}
+			type="button"
+			class="tab more label"
+			class:active={menuActive}
+			class:open={menuOpen}
+			aria-expanded={menuOpen}
+			aria-controls="site-menu"
+			onclick={() => (menuOpen = !menuOpen)}
+		>
+			<svg viewBox="0 0 20 20" class="burger" aria-hidden="true">
+				<path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2.4" />
+			</svg>
+			<span>MENU</span>
+		</button>
 	</nav>
+
+	{#if menuOpen}
+		<div bind:this={menuPanel} id="site-menu" class="menu" role="region" aria-label="All pages">
+			{#each menu as g (g.title)}
+				<div class="menu-group">
+					<p class="label menu-head">{g.title}</p>
+					<ul>
+						{#each g.links as l (l.href)}
+							<li>
+								<a
+									href={resolve(l.href)}
+									class:current={page.url.pathname === l.href}
+									aria-current={page.url.pathname === l.href ? 'page' : undefined}>{l.label}</a
+								>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{/each}
+		</div>
+	{/if}
 
 	<div class="plate-wrap {level}">
 		<div class="plate-edge">
@@ -247,6 +348,96 @@
 		pointer-events: none;
 	}
 
+	/* ---------- menu button + panel ---------- */
+
+	.tab.more {
+		grid-column: 7;
+		justify-self: start;
+		gap: 8px;
+		min-width: 0;
+		padding: 0 18px;
+		border: 0;
+		background: none;
+		font-size: 16px;
+		color: rgb(255 255 255 / 0.78);
+		cursor: pointer;
+	}
+
+	.tab.more.open {
+		color: var(--text);
+	}
+
+	.tab.more.open::before {
+		background: rgb(255 255 255 / 0.08);
+	}
+
+	.burger {
+		width: 18px;
+		height: 18px;
+		flex: none;
+	}
+
+	.menu {
+		position: absolute;
+		top: 100%;
+		right: 16px;
+		z-index: 70;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, auto));
+		gap: 8px 36px;
+		margin-top: 6px;
+		padding: 18px 24px 14px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--surface-2);
+		box-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+		animation: menu-in 140ms ease;
+	}
+
+	@keyframes menu-in {
+		from {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.menu {
+			animation: none;
+		}
+	}
+
+	.menu-head {
+		margin: 0 0 4px;
+		font-size: 13px;
+		color: var(--text-faint);
+	}
+
+	.menu ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+	}
+
+	.menu a {
+		display: flex;
+		align-items: center;
+		min-height: 36px;
+		color: var(--text);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.menu a:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.menu a.current {
+		color: var(--blue-edge);
+	}
+
 	.dot {
 		position: absolute;
 		top: 9px;
@@ -376,6 +567,7 @@
 
 	.right {
 		grid-column: 7;
+		grid-row: 1;
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
@@ -503,13 +695,52 @@
 		}
 
 		.tab,
-		.tab.sub {
+		.tab.sub,
+		.tab.more {
 			flex: 1;
 			min-width: 0;
 			margin: 0;
 			padding: 0 4px;
 			font-size: 15px;
 			color: rgb(255 255 255 / 0.84);
+		}
+
+		.tab.desktop-only {
+			display: none;
+		}
+
+		.tab.more {
+			gap: 6px;
+		}
+
+		/* Bottom sheet above the tab bar. */
+		.menu {
+			position: fixed;
+			top: auto;
+			left: 0;
+			right: 0;
+			bottom: calc(var(--mobile-bar-h) + env(safe-area-inset-bottom));
+			grid-template-columns: 1fr 1fr;
+			gap: 12px 20px;
+			margin: 0;
+			padding: 18px 16px 12px;
+			max-height: calc(100dvh - var(--mobile-bar-h) - 64px);
+			overflow-y: auto;
+			border-width: 1px 0 0;
+			border-radius: 12px 12px 0 0;
+			animation-name: sheet-in;
+		}
+
+		.menu a {
+			min-height: 44px;
+			white-space: normal;
+		}
+
+		@keyframes sheet-in {
+			from {
+				transform: translateY(12px);
+				opacity: 0;
+			}
 		}
 
 		.tab::before,

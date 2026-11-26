@@ -25,6 +25,9 @@
 				goto(resolve('/reset-time'));
 				break;
 			case '4':
+				goto(resolve('/events'));
+				break;
+			case '5':
 				goto(resolve('/faq'));
 				break;
 			case '?':
@@ -41,7 +44,8 @@
 	<div class="help-panel" role="note">
 		<p class="label">Keyboard shortcuts</p>
 		<p>
-			<kbd>1</kbd> Resets <kbd>2</kbd> Seasons <kbd>3</kbd> Time zones <kbd>4</kbd> FAQ
+			<kbd>1</kbd> Resets <kbd>2</kbd> Seasons <kbd>3</kbd> Time zones <kbd>4</kbd> Events
+			<kbd>5</kbd> FAQ
 			<kbd>?</kbd> close
 		</p>
 	</div>
