@@ -15,6 +15,7 @@
 				{ href: '/calendar', label: 'Calendar subscription' },
 				{ href: '/reset-time', label: 'Reset time by time zone' },
 				{ href: '/daily-reset', label: 'Daily challenge reset' },
+				{ href: '/shop-reset', label: 'Shop reset' },
 				{ href: '/about', label: 'About' },
 				{ href: '/contact', label: 'Contact' }
 			]

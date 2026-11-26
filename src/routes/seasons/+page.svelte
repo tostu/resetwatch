@@ -25,6 +25,19 @@
 	const remaining = $derived(season.end - clock.now);
 	const weeks = $derived(Array.from({ length: season.weeks }, (_, i) => i + 1));
 	const upcoming = $derived([seasonByIndex(season.index + 1), seasonByIndex(season.index + 2)]);
+	/** Ended seasons that have an archive page, newest first. */
+	const past = $derived(
+		Array.from({ length: season.index }, (_, i) => seasonByIndex(season.index - 1 - i)).filter(
+			(s) => seasonSlug(s)
+		)
+	);
+	const shortDate = (ts: number) =>
+		new Intl.DateTimeFormat('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric',
+			timeZone: 'America/New_York'
+		}).format(ts);
 </script>
 
 <svelte:head>
@@ -80,6 +93,12 @@
 	</PageHero>
 
 	<div class="column stack">
+		<p class="now-line">
+			Right now Overwatch is in <strong
+				>{season.year} Season {season.number}{season.title ? `: ${season.title}` : ''}</strong
+			>, week {season.week} of {season.weeks}. The next season starts at the weekly reset when this
+			one ends.
+		</p>
 		<div class="two">
 			<section class="panel" aria-labelledby="dates">
 				<h2 id="dates" class="display heading">THIS SEASON</h2>
@@ -126,6 +145,25 @@
 
 		<CalendarSubscribe compact />
 
+		{#if past.length}
+			<section class="panel" aria-labelledby="past">
+				<h2 id="past" class="display heading">PAST SEASONS</h2>
+				<ul class="rows">
+					{#each past as s (s.index)}
+						<li class="row">
+							<a class="label sname" href={resolve('/seasons/[slug]', { slug: seasonSlug(s)! })}
+								>{s.label}{s.title ? `: ${s.title}` : ''}</a
+							>
+							<span class="starts">
+								<span class="label dimlabel">RAN</span>
+								{shortDate(s.start)} – {shortDate(s.end)}
+							</span>
+						</li>
+					{/each}
+				</ul>
+			</section>
+		{/if}
+
 		<div>
 			<p class="note">
 				Season dates follow press reports of Blizzard's announced schedule. Start dates for 2027
@@ -146,6 +184,16 @@
 	.stack {
 		display: grid;
 		gap: 16px;
+	}
+	.now-line {
+		margin: 0 0 8px;
+		font-size: 17px;
+		line-height: 1.55;
+		color: var(--text-dim);
+	}
+	.now-line strong {
+		color: var(--text);
+		font-weight: 500;
 	}
 	.note {
 		margin: 0;

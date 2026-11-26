@@ -100,6 +100,7 @@
 				<span class="label">SHOP & WEEKLY CHALLENGES</span>
 				The weekly challenges and the shop rotation follow the same Tuesday reset, so the times above
 				apply to them as well. The in-game timer is always the final word.
+				<a href={resolve('/shop-reset')}>Shop reset countdown</a>.
 			</p>
 			<p class="note">
 				<span class="label">DAILY CHALLENGES</span>

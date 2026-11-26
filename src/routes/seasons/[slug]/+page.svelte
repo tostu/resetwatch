@@ -33,11 +33,15 @@
 	$effect(() => clock.start());
 
 	const d = $derived(seasonDetail(seasonPage(data.slug)!));
-	const title = $derived(seasonTitle(d));
-	const description = $derived(seasonDescription(d));
+	const title = $derived(seasonTitle(d, clock.now));
+	const description = $derived(seasonDescription(d, clock.now));
+	const past = $derived(d.season.end <= clock.now);
 	const q = $derived([
-		{ q: `When does ${d.name} start?`, a: startAnswer(d) },
-		{ q: `When does ${d.name} end?`, a: endAnswer(d) }
+		{
+			q: `When ${d.season.start <= clock.now ? 'did' : 'does'} ${d.name} start?`,
+			a: startAnswer(d, clock.now)
+		},
+		{ q: `When ${past ? 'did' : 'does'} ${d.name} end?`, a: endAnswer(d, clock.now) }
 	]);
 
 	const phase = $derived(
@@ -150,32 +154,34 @@
 				{/if}
 			</section>
 
-			<section aria-labelledby="new">
-				<h2 id="new">What's new in {d.name}?</h2>
-				{#if details?.summary || details?.sourceUrl}
-					{#if details.summary}<p>{details.summary}</p>{/if}
-					{#if details.sourceUrl}
+			{#if !past || details?.summary || details?.sourceUrl}
+				<section aria-labelledby="new">
+					<h2 id="new">What's new in {d.name}?</h2>
+					{#if details?.summary || details?.sourceUrl}
+						{#if details.summary}<p>{details.summary}</p>{/if}
+						{#if details.sourceUrl}
+							<p>
+								<!-- eslint-disable svelte/no-navigation-without-resolve -- external URL -->
+								Full details in Blizzard's post
+								<a href={details.sourceUrl} target="_blank" rel="noopener"
+									>{details.sourceTitle ?? 'on overwatch.blizzard.com'} ↗</a
+								>.
+								<!-- eslint-enable svelte/no-navigation-without-resolve -->
+							</p>
+						{/if}
+						<p class="small">
+							Summary and key facts are extracted automatically from the official post and can be
+							wrong.
+						</p>
+					{:else}
 						<p>
-							<!-- eslint-disable svelte/no-navigation-without-resolve -- external URL -->
-							Full details in Blizzard's post
-							<a href={details.sourceUrl} target="_blank" rel="noopener"
-								>{details.sourceTitle ?? 'on overwatch.blizzard.com'} ↗</a
-							>.
-							<!-- eslint-enable svelte/no-navigation-without-resolve -->
+							No official overview yet. Blizzard usually posts the season reveal (new heroes, maps,
+							battle pass) in the run-up to launch. Once it is out, the summary and a link to the
+							post show up here by themselves.
 						</p>
 					{/if}
-					<p class="small">
-						Summary and key facts are extracted automatically from the official post and can be
-						wrong.
-					</p>
-				{:else}
-					<p>
-						No official overview yet. Blizzard usually posts the season reveal (new heroes, maps,
-						battle pass) in the run-up to launch. Once it is out, the summary and a link to the post
-						show up here by themselves.
-					</p>
-				{/if}
-			</section>
+				</section>
+			{/if}
 
 			{#if phase === 'upcoming' && lastChance.length}
 				<section aria-labelledby="last">
