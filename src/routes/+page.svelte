@@ -4,11 +4,13 @@
 		allResets,
 		nextReset,
 		seasonAt,
+		seasonByIndex,
 		formatCountdown,
 		formatLocal,
 		urgency
 	} from '../lib/resets';
 	import { displayZone } from '../lib/timezone.svelte';
+	import { seasonSlug } from '../lib/season-pages';
 	import { resolve } from '$app/paths';
 	import {
 		HOME_TITLE,
@@ -43,6 +45,8 @@
 	});
 
 	const season = $derived(seasonAt(clock.now));
+	const nextSeason = $derived(seasonByIndex(season.index + 1));
+	const nextSeasonSlug = $derived(seasonSlug(nextSeason));
 	const next = $derived(nextReset(clock.now));
 	const resets = $derived(allResets(clock.now));
 	const weekly = $derived(resets.find((r) => r.kind === 'weekly')!);
@@ -172,7 +176,10 @@
 			The Overwatch weekly reset is every Tuesday at 2 PM ET / 11 AM PT, which is 19:00 UTC in
 			winter and 18:00 UTC in summer. Above are live countdowns to the reset and the season end,
 			below the current events, all in your local time. See the
-			<a href={resolve('/seasons')}>full season schedule</a> for week-by-week progress, or
+			<a href={resolve('/seasons')}>full season schedule</a> for week-by-week progress{#if nextSeasonSlug},
+				what is coming in
+				<a href={resolve('/seasons/[slug]', { slug: nextSeasonSlug })}>Season {nextSeason.number}</a
+				>{/if}, or
 			<a href={resolve('/calendar')}>subscribe to one calendar</a> with the reset, events and season launches.
 		</p>
 	</section>
