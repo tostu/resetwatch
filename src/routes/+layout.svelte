@@ -17,8 +17,11 @@
 
 	const canonical = $derived(absolute(page.url.pathname === '/' ? '/' : page.url.pathname));
 
+	/** Embeds run inside iframes and OBS: no bars, footer or banner, just the widget. */
+	const bare = $derived(page.url.pathname.startsWith('/embed'));
+
 	// Pages that should stay out of the index. One robots tag per page, set here only.
-	const NOINDEX_PATHS = ['/privacy', '/impressum'];
+	const NOINDEX_PATHS = ['/privacy', '/impressum', '/embed'];
 	const robots = $derived(
 		NOINDEX_PATHS.includes(page.url.pathname)
 			? 'noindex, follow'
@@ -47,17 +50,21 @@
 	<meta name="twitter:image:alt" content={OG_IMAGE_ALT} />
 </svelte:head>
 
-<TopBar />
-
-<main class="wrap">
+{#if bare}
 	{@render children()}
-</main>
+{:else}
+	<TopBar />
 
-<Footer />
+	<main class="wrap">
+		{@render children()}
+	</main>
 
-<KeyHints />
+	<Footer />
 
-<CookieNotice />
+	<KeyHints />
+
+	<CookieNotice />
+{/if}
 
 <style>
 	main {

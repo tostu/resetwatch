@@ -24,6 +24,7 @@ const PATHS: [path: string, lastmod?: string][] = [
 	...ZONE_PAGES.map((z): [string] => [`/reset-time/${z.slug}`]),
 	['/daily-reset'],
 	['/shop-reset'],
+	['/widget'],
 	['/faq'],
 	['/about', ABOUT_MODIFIED],
 	['/contact', CONTACT_MODIFIED]

@@ -47,9 +47,10 @@
 				>.
 			</p>
 			<p class="disclaimer">
-				For bots and overlays:
-				<a class="inline" href={resolve('/api/status.json')} data-sveltekit-reload>status.json</a>
-				(schedule snapshot, refreshed on every deploy).
+				For streams and sites: <a class="inline" href={resolve('/widget')}
+					>countdown widget &amp; OBS overlay</a
+				>. For bots:
+				<a class="inline" href={resolve('/api/status.json')} data-sveltekit-reload>status.json</a>.
 			</p>
 			<div class="support">
 				<a
