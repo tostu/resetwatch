@@ -17,6 +17,7 @@
 	import { absolute, breadcrumbJsonLd, jsonLdScript, OG_IMAGE } from '../../../lib/seo';
 	import { eventAddOnce, eventIcsPath, googleUrl } from '../../../lib/calendar';
 	import AddOnce from '#lib/components/AddOnce.svelte';
+	import EventPace from '#lib/components/EventPace.svelte';
 	import { displayZone } from '../../../lib/timezone.svelte';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Glance from '#lib/components/Glance.svelte';
@@ -123,6 +124,10 @@
 				</p>
 				{#if p.details?.summary}<p>{p.details.summary}</p>{/if}
 			</section>
+
+			{#if phase !== 'ended'}
+				<EventPace {p} />
+			{/if}
 
 			{#if phase !== 'ended'}
 				<section aria-labelledby="cal">
